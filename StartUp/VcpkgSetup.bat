@@ -39,6 +39,9 @@ IF NOT EXIST "%LOCAL_VCPKG_DIR%\vcpkg.exe" (
     ECHO Configuration de la variable d'environnement VCPKG_ROOT_DIR...
     SETX VCPKG_ROOT_DIR "%LOCAL_VCPKG_DIR%"
 )
+
+ECHO Vcpkg Set !! 
+
 GOTO GLOBALCHOICE
 
 :USE_EXISTING
