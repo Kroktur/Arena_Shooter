@@ -121,6 +121,8 @@ file(COPY "${CMAKE_SOURCE_DIR}/../SDL2/lib/x64/SDL2.dll"
 
 # Définit le répertoire de travail pour le débogueur Visual Studio
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/Debug"
+    VS_DEBUGGER_WORKING_DIRECTORY 
+        "$<IF:$<CONFIG:Debug>,${EXECUTABLE_OUTPUT_PATH}/Debug,${EXECUTABLE_OUTPUT_PATH}/Release>"
 )
+
 # Définit le répertoire de travail pour le débogueur Visual Studio
