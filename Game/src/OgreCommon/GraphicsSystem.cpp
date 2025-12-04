@@ -557,8 +557,7 @@ namespace Demo
             else
             {
                 Ogre::LogManager::getSingleton().logMessage( "[INFO] Texture cache not found at " +
-                                                             mWriteAccessFolder +
-                                                             "/textureMetadataCache.json" );
+                                                             mWriteAccessFolder +"/textureMetadataCache.json" );
             }
         }
         catch( Ogre::Exception &e )
