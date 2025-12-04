@@ -6,6 +6,8 @@
 
 #include "GraphicsSystem.h"
 #include "OgreItem.h"
+#include "MyCamera.h"
+#include "Core/Input.h"
 
 
 namespace Demo
@@ -28,7 +30,7 @@ namespace Demo
     void ArenaShooterGameState::createScene01()
     {
         TutorialGameState::createScene01();
-
+		m_camera = new MyCamera(mGraphicsSystem, false);
         Ogre::SceneManager* sceneManager = mGraphicsSystem->getSceneManager();
 
         mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 30, 100));
@@ -115,7 +117,20 @@ namespace Demo
 
     void ArenaShooterGameState::update(float timeSinceLast)
     {
-        TutorialGameState::update(timeSinceLast);
+		// don't touch
+        KT::Input::Update();
+       /* TutorialGameState::update(timeSinceLast);*/
+        if (mDisplayHelpMode != 0)
+        {
+            // Show FPS
+            Ogre::String finalText;
+            generateDebugText(timeSinceLast, finalText);
+          /*  mDebugText->setCaption(finalText);
+            mDebugTextShadow->setCaption(finalText);*/
+        }
+
+        if (m_camera)
+            m_camera->update(timeSinceLast);
 
         m_pTtem->getParentNode()->translate(10 * timeSinceLast, 0, 0);
     }

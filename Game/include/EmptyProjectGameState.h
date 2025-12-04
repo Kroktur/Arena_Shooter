@@ -6,6 +6,7 @@
 #include "TutorialGameState.h"
 
 #include "OgreCommon.h"
+#include "MyCamera.h"
 
 namespace Demo
 {
@@ -13,7 +14,7 @@ namespace Demo
 
 	class ArenaShooterGameState : public TutorialGameState
 	{
-
+		MyCamera* m_camera;
 		Ogre::Item* m_pTtem;
 
 
