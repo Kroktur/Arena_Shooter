@@ -1,4 +1,4 @@
-#include "EmptyProjectGameState.h"
+#include "ASGameState.h"
 
 #include <OgreCamera.h>
 #include <OgreHlmsPbs.h>

@@ -1,5 +1,5 @@
 //#include "EmptyProjectGameState.h"
-#include "EmptyProjectGameState.h"
+#include "ASGameState.h"
 #include "GraphicsSystem.h"
 
 #include "Compositor/OgreCompositorManager2.h"
