@@ -12,35 +12,11 @@
 // Declares WinMain / main
 #include "MainEntryPointHelper.h"
 #include "System/MainEntryPoints.h"
+#include "shlobj.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-#    include <errno.h>
-#    include <pwd.h>
-#    include <sys/stat.h>
-#    include <sys/types.h>
-#    include <unistd.h>
-#endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-#    include "shlobj.h"
-#endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-#    include <Foundation/Foundation.h>
-#endif
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#    include "OSX/macUtils.h"
-#endif
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-#    include "iOS/macUtils.h"
-#endif
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine, INT nCmdShow)
-#else
-int mainApp(int argc, const char* argv[])
-#endif
 {
     return Demo::MainEntryPoints::mainAppSingleThreaded(DEMO_MAIN_ENTRY_PARAMS);
 }
@@ -76,15 +52,7 @@ namespace Demo
     public:
         EmptyProjectGraphicsSystem(GameState* gameState) : GraphicsSystem(gameState)
         {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-            mResourcePath = "Data/";
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-            mResourcePath = Ogre::macBundlePath() + "/Contents/Resources/Data/";
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-            mResourcePath = Ogre::macBundlePath() + "/Data/";
-#else
             mResourcePath = "../Data/";
-#endif
 
             // It's recommended that you set this path to:
             //	%APPDATA%/EmptyProject/ on Windows
@@ -96,7 +64,6 @@ namespace Demo
             //	if the user removes cached data from the app, so the settings will be
             //	reset.
             //  Obviously you can replace "EmptyProject" by your app's name.
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
             mWriteAccessFolder = +"/";
             TCHAR path[MAX_PATH];
             if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path) !=
@@ -104,17 +71,12 @@ namespace Demo
             {
                 // Need to convert to OEM codepage so that fstream can
                 // use it properly on international systems.
-#    if defined( _UNICODE ) || defined( UNICODE )
                 int size_needed =
                     WideCharToMultiByte(CP_OEMCP, 0, path, (int)wcslen(path), NULL, 0, NULL, NULL);
                 mWriteAccessFolder = std::string(size_needed, 0);
                 WideCharToMultiByte(CP_OEMCP, 0, path, (int)wcslen(path), &mWriteAccessFolder[0],
                     size_needed, NULL, NULL);
-#    else
-                TCHAR oemPath[MAX_PATH];
-                CharToOem(path, oemPath);
-                mWriteAccessFolder = std::string(oemPath);
-#    endif
+
                 mWriteAccessFolder += "/EmptyProject/";
 
                 // Attempt to create directory where config files go
@@ -126,54 +88,6 @@ namespace Demo
                     mWriteAccessFolder = "";
                 }
             }
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-            const char* homeDir = getenv("HOME");
-            if (homeDir == 0)
-                homeDir = getpwuid(getuid())->pw_dir;
-            mWriteAccessFolder = homeDir;
-            mWriteAccessFolder += "/.config";
-            int result = mkdir(mWriteAccessFolder.c_str(), S_IRWXU | S_IRWXG);
-            int errorReason = errno;
-
-            // Create "~/.config"
-            if (result && errorReason != EEXIST)
-            {
-                printf("Error. Failing to create path '%s'. Do you have access rights?",
-                    mWriteAccessFolder.c_str());
-                mWriteAccessFolder = "";
-            }
-            else
-            {
-                // Create "~/.config/EmptyProject"
-                mWriteAccessFolder += "/EmptyProject/";
-                result = mkdir(mWriteAccessFolder.c_str(), S_IRWXU | S_IRWXG);
-                errorReason = errno;
-
-                if (result && errorReason != EEXIST)
-                {
-                    printf("Error. Failing to create path '%s'. Do you have access rights?",
-                        mWriteAccessFolder.c_str());
-                    mWriteAccessFolder = "";
-                }
-            }
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-            NSURL* libUrl = [NSFileManager.defaultManager URLForDirectory : NSLibraryDirectory
-                inDomain : NSUserDomainMask
-                appropriateForURL : nil
-                create : YES
-                error : nil];
-            // Create "pathToCache/EmptyProject"
-            mWriteAccessFolder = Ogre::String(libUrl.absoluteURL.path.UTF8String) + "/EmptyProject/";
-            const int result = mkdir(mWriteAccessFolder.c_str(), S_IRWXU | S_IRWXG);
-            const int errorReason = errno;
-
-            if (result && errorReason != EEXIST)
-            {
-                printf("Error. Failing to create path '%s'. Do you have access rights?",
-                    mWriteAccessFolder.c_str());
-                mWriteAccessFolder = "";
-            }
-#endif
         }
     };
 
