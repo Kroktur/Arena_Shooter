@@ -67,7 +67,7 @@ include_directories( "${SDL2_INCLUDE_DIR}" )
 
 # Copier les headers Engine
 file(COPY "${GAME_ENGINE_INCLUDE_DIR}/"
-     DESTINATION "${HEADER_DIR}/EngineCopy")
+     DESTINATION "${HEADER_DIR}")
 # Copier les headers Engine
 
 # Récupération automatique des fichiers
