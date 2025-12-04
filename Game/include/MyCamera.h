@@ -21,7 +21,7 @@ public:
 	void onMouseMoved(const SDL_Event& arg);
 	bool keyPressed(const SDL_KeyboardEvent& arg);  // Returns true if we've handled the event
 	bool keyReleased(const SDL_KeyboardEvent& arg); // Returns true if we've handled the event
-
+	void Input();
 private:
 	Ogre::Camera* m_camera;
 	Ogre::SceneNode* m_camNode; // Node to which the camera is attached

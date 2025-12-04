@@ -90,6 +90,9 @@ bool MyCamera::keyPressed(const SDL_KeyboardEvent& arg)
     return true;
 }
 
+
+
+
 bool MyCamera::keyReleased(const SDL_KeyboardEvent& arg)
 {
     if (arg.keysym.scancode == SDL_SCANCODE_LSHIFT)
@@ -110,6 +113,22 @@ bool MyCamera::keyReleased(const SDL_KeyboardEvent& arg)
     else
         return false;
     return true;
+}
+
+void MyCamera::Input()
+{
+    m_ZQSD[0] = false;
+    m_ZQSD[1] = false;
+    m_ZQSD[2] = false;
+    m_ZQSD[3] = false;
+    if (KT::Input::isPressed<KT::KEY>(KT::KEY::Z))
+        m_ZQSD[0] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::Q))
+        m_ZQSD[1] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::S))
+        m_ZQSD[2] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::D))
+        m_ZQSD[3] = true;
 }
 
 void MyCamera::onMouseMoved(const SDL_Event& arg)

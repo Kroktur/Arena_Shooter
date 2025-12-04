@@ -119,6 +119,14 @@ namespace Demo
     {
 		// don't touch
         KT::Input::Update();
+
+
+        //input
+        if (m_camera)
+            m_camera->Input();
+        //update
+        if (m_camera)
+            m_camera->update(timeSinceLast);
        /* TutorialGameState::update(timeSinceLast);*/
         if (mDisplayHelpMode != 0)
         {
