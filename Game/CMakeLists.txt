@@ -25,6 +25,7 @@ set(SDL2MAIN_LIBRARY  "${SDL2_DIR}/lib/x64/SDL2main.lib")
 
 #Set Other Variables
 set(GAME_ENGINE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../GameEngine/include")
+set(GAME_ENGINE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../GameEngine/src")
 set(VCPKG_ROOT $ENV{VCPKG_ROOT_DIR})
 #Set Other Variables
 
@@ -68,6 +69,8 @@ include_directories( "${SDL2_INCLUDE_DIR}" )
 # Copier les headers Engine
 file(COPY "${GAME_ENGINE_INCLUDE_DIR}/"
      DESTINATION "${HEADER_DIR}")
+ file(COPY "${GAME_ENGINE_SOURCE_DIR}/"
+     DESTINATION "${SOURCE_DIR}")
 # Copier les headers Engine
 
 # Récupération automatique des fichiers
