@@ -4,4 +4,9 @@ Game/bin/*
 Game/Build/*
 Game/include/OgreCommon/*
 Game/srs/OgreCommon/*
-Game/include/EngineCopy/*
+Game/include/Tools/*
+Game/include/Core/*
+Game/include/Math/*
+Game/src/Tools/*
+Game/src/Core/*
+Game/src/Math/*
