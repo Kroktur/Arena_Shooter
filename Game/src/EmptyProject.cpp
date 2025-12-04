@@ -1,203 +1,127 @@
-
 #include "EmptyProjectGameState.h"
+
+#include <OgreCamera.h>
+#include <OgreHlmsPbs.h>
+#include <OgreSceneManager.h>
+
 #include "GraphicsSystem.h"
+#include "OgreItem.h"
 
-#include "Compositor/OgreCompositorManager2.h"
-#include "OgreCamera.h"
-#include "OgreConfigFile.h"
-#include "OgreRoot.h"
-#include "OgreSceneManager.h"
-#include "OgreWindow.h"
-
-// Declares WinMain / main
-#include "MainEntryPointHelper.h"
-#include "System/MainEntryPoints.h"
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-#    include <errno.h>
-#    include <pwd.h>
-#    include <sys/stat.h>
-#    include <sys/types.h>
-#    include <unistd.h>
-#endif
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-#    include "shlobj.h"
-#endif
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-#    include <Foundation/Foundation.h>
-#endif
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#    include "OSX/macUtils.h"
-#endif
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-#    include "iOS/macUtils.h"
-#endif
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-INT WINAPI WinMainApp( HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine, INT nCmdShow )
-#else
-int mainApp( int argc, const char *argv[] )
-#endif
-{
-    std::cout << "test is succes";
-    return Demo::MainEntryPoints::mainAppSingleThreaded( DEMO_MAIN_ENTRY_PARAMS );
-}
 
 namespace Demo
 {
-    class EmptyProjectGraphicsSystem final : public GraphicsSystem
+    ArenaShooterGameState::ArenaShooterGameState(const Ogre::String& helpDescription)
+        :TutorialGameState(helpDescription)
     {
-        Ogre::CompositorWorkspace *setupCompositor() override
-        {
-            return GraphicsSystem::setupCompositor();
-        }
-
-        void setupResources() override
-        {
-            GraphicsSystem::setupResources();
-
-            Ogre::ConfigFile cf;
-            cf.load( mResourcePath + "resources2.cfg" );
-
-            Ogre::String dataFolder = cf.getSetting( "DoNotUseAsResource", "Hlms", "" );
-
-            if( dataFolder.empty() )
-                dataFolder = "./";
-            else if( *( dataFolder.end() - 1 ) != '/' )
-                dataFolder += "/";
-
-            dataFolder += "2.0/scripts/materials/PbsMaterials";
-
-            addResourceLocation( dataFolder, "FileSystem", "General" );
-        }
-
-    public:
-        EmptyProjectGraphicsSystem( GameState *gameState ) : GraphicsSystem( gameState )
-        {
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-            mResourcePath = "Data/";
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-            mResourcePath = Ogre::macBundlePath() + "/Contents/Resources/Data/";
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-            mResourcePath = Ogre::macBundlePath() + "/Data/";
-#else
-            mResourcePath = "../Data/";
-#endif
-
-            // It's recommended that you set this path to:
-            //	%APPDATA%/EmptyProject/ on Windows
-            //	~/.config/EmptyProject/ on Linux
-            //	macCachePath() + "/EmptyProject/" (NSCachesDirectory) on Apple -> Important because
-            //	on iOS your app could be rejected from App Store when they see iCloud
-            //	trying to backup your Ogre.log & ogre.cfg auto-generated without user
-            //	intervention. Also convenient because these settings will be deleted
-            //	if the user removes cached data from the app, so the settings will be
-            //	reset.
-            //  Obviously you can replace "EmptyProject" by your app's name.
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-            mWriteAccessFolder = +"/";
-            TCHAR path[MAX_PATH];
-            if( SUCCEEDED( SHGetFolderPath( NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path ) !=
-                           S_OK ) )
-            {
-                // Need to convert to OEM codepage so that fstream can
-                // use it properly on international systems.
-#    if defined( _UNICODE ) || defined( UNICODE )
-                int size_needed =
-                    WideCharToMultiByte( CP_OEMCP, 0, path, (int)wcslen( path ), NULL, 0, NULL, NULL );
-                mWriteAccessFolder = std::string( size_needed, 0 );
-                WideCharToMultiByte( CP_OEMCP, 0, path, (int)wcslen( path ), &mWriteAccessFolder[0],
-                                     size_needed, NULL, NULL );
-#    else
-                TCHAR oemPath[MAX_PATH];
-                CharToOem( path, oemPath );
-                mWriteAccessFolder = std::string( oemPath );
-#    endif
-                mWriteAccessFolder += "/EmptyProject/";
-
-                // Attempt to create directory where config files go
-                if( !CreateDirectoryA( mWriteAccessFolder.c_str(), NULL ) &&
-                    GetLastError() != ERROR_ALREADY_EXISTS )
-                {
-                    // Couldn't create directory (no write access?),
-                    // fall back to current working dir
-                    mWriteAccessFolder = "";
-                }
-            }
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-            const char *homeDir = getenv( "HOME" );
-            if( homeDir == 0 )
-                homeDir = getpwuid( getuid() )->pw_dir;
-            mWriteAccessFolder = homeDir;
-            mWriteAccessFolder += "/.config";
-            int result = mkdir( mWriteAccessFolder.c_str(), S_IRWXU | S_IRWXG );
-            int errorReason = errno;
-
-            // Create "~/.config"
-            if( result && errorReason != EEXIST )
-            {
-                printf( "Error. Failing to create path '%s'. Do you have access rights?",
-                        mWriteAccessFolder.c_str() );
-                mWriteAccessFolder = "";
-            }
-            else
-            {
-                // Create "~/.config/EmptyProject"
-                mWriteAccessFolder += "/EmptyProject/";
-                result = mkdir( mWriteAccessFolder.c_str(), S_IRWXU | S_IRWXG );
-                errorReason = errno;
-
-                if( result && errorReason != EEXIST )
-                {
-                    printf( "Error. Failing to create path '%s'. Do you have access rights?",
-                            mWriteAccessFolder.c_str() );
-                    mWriteAccessFolder = "";
-                }
-            }
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-            NSURL *libUrl = [NSFileManager.defaultManager URLForDirectory:NSLibraryDirectory
-                                                                 inDomain:NSUserDomainMask
-                                                        appropriateForURL:nil
-                                                                   create:YES
-                                                                    error:nil];
-            // Create "pathToCache/EmptyProject"
-            mWriteAccessFolder = Ogre::String( libUrl.absoluteURL.path.UTF8String ) + "/EmptyProject/";
-            const int result = mkdir( mWriteAccessFolder.c_str(), S_IRWXU | S_IRWXG );
-            const int errorReason = errno;
-
-            if( result && errorReason != EEXIST )
-            {
-                printf( "Error. Failing to create path '%s'. Do you have access rights?",
-                        mWriteAccessFolder.c_str() );
-                mWriteAccessFolder = "";
-            }
-#endif
-        }
-    };
-
-    void MainEntryPoints::createSystems( GameState **outGraphicsGameState,
-                                         GraphicsSystem **outGraphicsSystem,
-                                         GameState **outLogicGameState, LogicSystem **outLogicSystem )
-    {
-        EmptyProjectGameState *gfxGameState = new EmptyProjectGameState( "Empty Project Example" );
-
-        GraphicsSystem *graphicsSystem = new EmptyProjectGraphicsSystem( gfxGameState );
-
-        gfxGameState->_notifyGraphicsSystem( graphicsSystem );
-
-        *outGraphicsGameState = gfxGameState;
-        *outGraphicsSystem = graphicsSystem;
     }
 
-    void MainEntryPoints::destroySystems( GameState *graphicsGameState, GraphicsSystem *graphicsSystem,
-                                          GameState *logicGameState, LogicSystem *logicSystem )
+    //void ArenaShooterGameState::createScene01()
+    //{
+    //	Ogre::Item* item = mGraphicsSystem->getSceneManager()->createItem(
+    //		"Cube_d.mesh", 
+    //		Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+    //		Ogre::SCENE_DYNAMIC);
+    //	mSceneNode = mGraphicsSystem->getSceneManager()->getRootSceneNode(Ogre::SCENE_DYNAMIC)->createChildSceneNode(Ogre::SCENE_DYNAMIC);
+    //	mSceneNode->setPosition(0, 0, 0);
+    //	mSceneNode->attachObject(static_cast<Ogre::MovableObject*>(item));
+    //}
+    void ArenaShooterGameState::createScene01()
     {
-        delete graphicsSystem;
-        delete graphicsGameState;
+        TutorialGameState::createScene01();
+
+        Ogre::SceneManager* sceneManager = mGraphicsSystem->getSceneManager();
+
+        mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 30, 100));
+
+        sceneManager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
+
+
+        float armsLength = 2.5f;
+
+        //Ogre::ResourceGroupManager::getSingleton().addResourceLocation("Resources", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+        m_pTtem = sceneManager->createItem(
+            "cube_d.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+            Ogre::SCENE_DYNAMIC);
+
+        const size_t idx = static_cast<size_t>(0);
+
+        mSceneNode = sceneManager->getRootSceneNode(Ogre::SCENE_DYNAMIC)
+            ->createChildSceneNode(Ogre::SCENE_DYNAMIC);
+
+        mSceneNode->setPosition(0, 0, 0);
+        mSceneNode->setScale(0.65f, 0.65f, 0.65f);
+
+        mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));
+
+        mSceneNode->attachObject(m_pTtem);
+
+        Ogre::SceneNode* rootNode = sceneManager->getRootSceneNode();
+
+        //Ogre::Light* light = sceneManager->createLight();
+        //Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
+        //lightNode->attachObject(light);
+        //light->setPowerScale(1.0f);
+        //light->setType(Ogre::Light::LT_DIRECTIONAL);
+        //light->setDirection(Ogre::Vector3(-1, -1, -1).normalisedCopy());
+
+        //mLightNodes[0] = lightNode;
+
+        //sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f,
+        //    Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f,
+        //    -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
+
+        //light = sceneManager->createLight();
+        //lightNode = rootNode->createChildSceneNode();
+        //lightNode->attachObject(light);
+        //light->setDiffuseColour(0.8f, 0.4f, 0.2f);  // Warm
+        //light->setSpecularColour(0.8f, 0.4f, 0.2f);
+        //light->setPowerScale(Ogre::Math::PI);
+        //light->setType(Ogre::Light::LT_SPOTLIGHT);
+        //lightNode->setPosition(-10.0f, 10.0f, 10.0f);
+        //light->setDirection(Ogre::Vector3(1, -1, -1).normalisedCopy());
+        //light->setAttenuationBasedOnRadius(10.0f, 0.01f);
+
+        //mLightNodes[1] = lightNode;
+
+        //light = sceneManager->createLight();
+        //lightNode = rootNode->createChildSceneNode();
+        //lightNode->attachObject(light);
+        //light->setDiffuseColour(0.2f, 0.4f, 0.8f);  // Cold
+        //light->setSpecularColour(0.2f, 0.4f, 0.8f);
+        //light->setPowerScale(Ogre::Math::PI);
+        //light->setType(Ogre::Light::LT_SPOTLIGHT);
+        //lightNode->setPosition(10.0f, 10.0f, -10.0f);
+        //light->setDirection(Ogre::Vector3(-1, -1, 1).normalisedCopy());
+        //light->setAttenuationBasedOnRadius(10.0f, 0.01f);
+
+        //mLightNodes[2] = lightNode;
+
+        //generateLights();
+
+        //mCameraController = new CameraController(mGraphicsSystem, false);
+
+        //// This sample is too taxing on pixel shaders. Use the fastest PCF filter.
+        //Ogre::Hlms* hlms = mGraphicsSystem->getRoot()->getHlmsManager()->getHlms(Ogre::HLMS_PBS);
+        //assert(dynamic_cast<Ogre::HlmsPbs*>(hlms));
+        //Ogre::HlmsPbs* pbs = static_cast<Ogre::HlmsPbs*>(hlms);
+        //pbs->setShadowSettings(Ogre::HlmsPbs::PCF_2x2);
+
+        //// Change the roughness of the default datablock to something prettier.
+        //static_cast<Ogre::HlmsPbsDatablock*>(pbs->getDefaultDatablock())->setRoughness(0.1f);
+
+        //TutorialGameState::createScene01();
     }
 
-    const char *MainEntryPoints::getWindowTitle() { return "Empty Project Sample"; }
-}  // namespace Demo
+    void ArenaShooterGameState::update(float timeSinceLast)
+    {
+        TutorialGameState::update(timeSinceLast);
+
+        m_pTtem->getParentNode()->translate(10 * timeSinceLast, 0, 0);
+    }
+
+    void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
+    {
+        TutorialGameState::keyReleased(arg);
+    }
+}
