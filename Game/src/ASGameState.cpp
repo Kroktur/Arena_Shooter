@@ -7,6 +7,7 @@
 #include "GraphicsSystem.h"
 #include "OgreItem.h"
 #include "MyCamera.h"
+#include "MyPlayer.h"
 #include "Core/Input.h"
 
 
@@ -22,7 +23,7 @@ namespace Demo
 		m_camera = new MyCamera(mGraphicsSystem, false);
         Ogre::SceneManager* sceneManager = mGraphicsSystem->getSceneManager();
 
-        mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 30, 100));
+        //mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 0, 50));
 
         sceneManager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
@@ -42,13 +43,17 @@ namespace Demo
         mSceneNode->setPosition(0, 0, 0);
         mSceneNode->setScale(0.65f, 0.65f, 0.65f);
 
-        mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));
+        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
 
         mSceneNode->attachObject(m_pTtem);
 
         Ogre::SceneNode* rootNode = sceneManager->getRootSceneNode();
 
-        
+        // nouvelle sceneNode player
+
+
+		auto* player = new MyPlayer(this, mSceneNode);
+		player->Init();
     }
 
     void ArenaShooterGameState::update(float timeSinceLast)
@@ -58,15 +63,24 @@ namespace Demo
 
 
 		// don't touch
-        KT::Input::Update();
-
+     
 
         //input
-        if (m_camera)
-            m_camera->Input();
+      /*  if (m_camera)
+            m_camera->Input();*/
+        KT::Input::Update();
+        ExecuteAction([](IGameObject* go)
+            {
+                go->input();
+            });
         //update
         if (m_camera)
             m_camera->update(timeSinceLast);
+        ExecuteAction([&](IGameObject* go)
+            {
+                go->update(timeSinceLast);
+            });
+
        /* TutorialGameState::update(timeSinceLast);*/
         if (mDisplayHelpMode != 0)
         {
@@ -76,15 +90,10 @@ namespace Demo
           /*  mDebugText->setCaption(finalText);
             mDebugTextShadow->setCaption(finalText);*/
         }
-
-        if (m_camera)
-            m_camera->update(timeSinceLast);
-
-        m_pTtem->getParentNode()->translate(10 * timeSinceLast, 0, 0);
     }
 
     void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
     {
-        TutorialGameState::keyReleased(arg);
+       // TutorialGameState::keyReleased(arg);
     }
 }

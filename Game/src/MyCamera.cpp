@@ -17,7 +17,13 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
 {
     // memset is the same as : std::fill(std::begin(m_ZSQD), std::end(m_ZSQD), false);
 	memset(m_ZQSD, 0, sizeof(m_ZQSD));               // 0: Z, 1: S, 2: Q, 3: D
-	memset(m_slideUpDown, 0, sizeof(m_slideUpDown)); // 0: Up, 1: Down
+	memset(m_directionalCross, 0, sizeof(m_directionalCross)); // 0: Left, 1: Right, 2: Up, 3: Down
+    Ogre::Camera* camera = m_graphicsSystem->getCamera();
+    Ogre::Node* cameraNode = m_useSceneNode ? camera->getParentNode() : nullptr;
+    camera->setPosition(0, 30, 0);
+    camera->getOrientation();
+ //   cameraNode->setPosition(0, 100, 0);
+
 }
 
 Ogre::Camera* MyCamera::getCamera() const
@@ -29,7 +35,7 @@ void MyCamera::update(const float& dt)
 {
 	Ogre::Camera* camera = m_graphicsSystem->getCamera();
     Ogre::Node* cameraNode = m_useSceneNode ? camera->getParentNode() : nullptr;
-    if (m_cameraYaw != 0.0f || m_cameraPitch != 0.0f)
+  /*  if (m_cameraYaw != 0.0f || m_cameraPitch != 0.0f)
     {
 	    if (m_useSceneNode)
 	    {
@@ -44,12 +50,20 @@ void MyCamera::update(const float& dt)
 
         m_cameraYaw = 0.0f;
         m_cameraPitch = 0.0f;
+    }*/
+
+    static bool init = false;
+    if (!init)
+    {
+        //cameraNode->pitch(Ogre::Degree(90), Ogre::Node::TS_WORLD);
+        camera->pitch(-Ogre::Degree(90));
+		init = true;
     }
 
 	// --- Movement ---
-    int camMovementZ = m_ZQSD[2] - m_ZQSD[0];
-    int camMovementX = m_ZQSD[3] - m_ZQSD[1];
-    int slideUpDown = m_slideUpDown[0] - m_slideUpDown[1];
+    int camMovementZ = m_directionalCross[2] - m_directionalCross[0];
+    int camMovementX = m_directionalCross[3] - m_directionalCross[1];
+    int slideUpDown  = m_directionalCross[0] - m_directionalCross[1];
 
     if (camMovementX || slideUpDown || camMovementZ)
     {
@@ -70,65 +84,55 @@ void MyCamera::update(const float& dt)
 }
 
 bool MyCamera::keyPressed(const SDL_KeyboardEvent& arg)
-{
+{/*
     if (arg.keysym.scancode == SDL_SCANCODE_LSHIFT)
         m_speedModifier = true;
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::Z))
-        m_ZQSD[0] = true;
-    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::Q))
-        m_ZQSD[1] = true;
-    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::S))
-        m_ZQSD[2] = true;
-    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::D))
-        m_ZQSD[3] = true;
-    else if (arg.keysym.scancode == SDL_SCANCODE_PAGEUP)
-        m_slideUpDown[0] = true;
-    else if (arg.keysym.scancode == SDL_SCANCODE_PAGEDOWN)
-        m_slideUpDown[1] = true;
+
+    if (KT::Input::isPressed<KT::KEY>(KT::KEY::UP))
+        m_directionalCross[0] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::LEFT))
+        m_directionalCross[1] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::DOWN))
+        m_directionalCross[2] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::RIGHT))
+        m_directionalCross[3] = true;
     else
-        return false;
+        return false;*/
     return true;
 }
 
-
-
-
 bool MyCamera::keyReleased(const SDL_KeyboardEvent& arg)
-{
+{/*
     if (arg.keysym.scancode == SDL_SCANCODE_LSHIFT)
         m_speedModifier = false;
 
-    if (!KT::Input::isPressed<KT::KEY>(KT::KEY::Z))
-        m_ZQSD[0] = false;
-    else if (!KT::Input::isPressed<KT::KEY>(KT::KEY::Q))
-        m_ZQSD[1] = false;
-    else if (!KT::Input::isPressed<KT::KEY>(KT::KEY::S))
-        m_ZQSD[2] = false;
-    else if (!KT::Input::isPressed<KT::KEY>(KT::KEY::D))
-        m_ZQSD[3] = false;
-    else if (arg.keysym.scancode == SDL_SCANCODE_PAGEUP)
-        m_slideUpDown[0] = false;
-    else if (arg.keysym.scancode == SDL_SCANCODE_PAGEDOWN)
-        m_slideUpDown[1] = false;
+    if (!KT::Input::isPressed<KT::KEY>(KT::KEY::UP))
+        m_directionalCross[0] = false;
+    else if (!KT::Input::isPressed<KT::KEY>(KT::KEY::LEFT))
+        m_directionalCross[1] = false;
+    else if (!KT::Input::isPressed<KT::KEY>(KT::KEY::DOWN))
+        m_directionalCross[2] = false;
+    else if (!KT::Input::isPressed<KT::KEY>(KT::KEY::RIGHT))
+        m_directionalCross[3] = false;
     else
-        return false;
+        return false;*/
     return true;
 }
 
 void MyCamera::Input()
 {
-    m_ZQSD[0] = false;
-    m_ZQSD[1] = false;
-    m_ZQSD[2] = false;
-    m_ZQSD[3] = false;
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::Z))
-        m_ZQSD[0] = true;
-    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::Q))
-        m_ZQSD[1] = true;
-    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::S))
-        m_ZQSD[2] = true;
-    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::D))
-        m_ZQSD[3] = true;
+  /*  m_directionalCross[0] = false;
+    m_directionalCross[1] = false;
+    m_directionalCross[2] = false;
+    m_directionalCross[3] = false;
+    if (KT::Input::isPressed<KT::KEY>(KT::KEY::UP))
+        m_directionalCross[0] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::LEFT))
+        m_directionalCross[1] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::DOWN))
+        m_directionalCross[2] = true;
+    else if (KT::Input::isPressed<KT::KEY>(KT::KEY::RIGHT))
+        m_directionalCross[3] = true;*/
 }
 
 void MyCamera::onMouseMoved(const SDL_Event& arg)

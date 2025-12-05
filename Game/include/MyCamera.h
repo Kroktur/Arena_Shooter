@@ -38,7 +38,7 @@ private:
 	bool m_useSceneNode;
 	bool m_speedModifier;
 	bool m_ZQSD[4];
-	bool m_slideUpDown[2];
+	bool m_directionalCross[4];
 
 	// need our own graphics system pointer - TDL
 	Demo::GraphicsSystem* m_graphicsSystem;
