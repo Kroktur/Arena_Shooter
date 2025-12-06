@@ -36,12 +36,11 @@ namespace Demo
 
 
         m_pTtem = sceneManager->createItem(
-            "cube_d.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+            "CubeFromMedia_d.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
             Ogre::SCENE_DYNAMIC);
 
-        m_pTtem->setDatablock("Rocks");
-
-
+        m_pTtem->setDatablock("Marble");
+        m_pTtem->setVisibilityFlags(0x000000001);
 
 
         const size_t idx = static_cast<size_t>(0);
@@ -63,41 +62,14 @@ namespace Demo
         Ogre::Light* light = sceneManager->createLight();
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
         lightNode->attachObject(light);
+        lightNode->setPosition(0, 0, 10);
         light->setPowerScale(97.0f);
         light->setType(Ogre::Light::LT_DIRECTIONAL);
-        light->setDirection(Ogre::Vector3(-1, -1, -1).normalisedCopy());
-        // light->setDirection( Ogre::Vector3( 0, -1, 0 ).normalisedCopy() );
-        // light->setDirection( Ogre::Vector3( 0, -1, -0.5 ).normalisedCopy() );
-
-     /*   mLightNodes[0] = lightNode;*/
+        light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
 
         sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
             Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
             -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
-
-        light = sceneManager->createLight();
-        lightNode = rootNode->createChildSceneNode();
-        lightNode->attachObject(light);
-        light->setDiffuseColour(0.8f, 0.4f, 0.2f);  // Warm
-        light->setSpecularColour(0.8f, 0.4f, 0.2f);
-        light->setType(Ogre::Light::LT_SPOTLIGHT);
-        lightNode->setPosition(-10.0f, 10.0f, 10.0f);
-        light->setDirection(Ogre::Vector3(1, -1, -1).normalisedCopy());
-        light->setAttenuationBasedOnRadius(10.0f, 0.01f);
-
-      /*  mLightNodes[1] = lightNode;*/
-
-        light = sceneManager->createLight();
-        lightNode = rootNode->createChildSceneNode();
-        lightNode->attachObject(light);
-        light->setDiffuseColour(0.2f, 0.4f, 0.8f);  // Cold
-        light->setSpecularColour(0.2f, 0.4f, 0.8f);
-        light->setType(Ogre::Light::LT_SPOTLIGHT);
-        lightNode->setPosition(10.0f, 10.0f, -10.0f);
-        light->setDirection(Ogre::Vector3(-1, -1, 1).normalisedCopy());
-        light->setAttenuationBasedOnRadius(10.0f, 0.01f);
-
-       /* mLightNodes[2] = lightNode;*/
 
 
     }

@@ -37,22 +37,47 @@ namespace Demo
             Ogre::ConfigFile cf;
             cf.load(mResourcePath + "resources2.cfg");
 
-            Ogre::String dataFolder = cf.getSetting("DoNotUseAsResource", "Hlms", "");
+         /*   Ogre::String dataFolder = cf.getSetting("DoNotUseAsResource", "Hlms", "");
 
             if (dataFolder.empty())
                 dataFolder = "./";
             else if (*(dataFolder.end() - 1) != '/')
                 dataFolder += "/";
 
-            dataFolder += "2.0/scripts/materials/PbsMaterials";
+            dataFolder += "Pbs/Materials";
 
-            addResourceLocation(dataFolder, "FileSystem", "General");
+           addResourceLocation(dataFolder, "FileSystem", "General");*/
+
+            addResourceLocation(
+                mResourcePath + "Data/Hlms/Pbs/Any/",
+                "FileSystem", "General"
+            );
+            addResourceLocation(
+                mResourcePath + "Data/Hlms/Pbs/GLSL/",
+                "FileSystem", "General"
+            );
+            addResourceLocation(
+                mResourcePath + "Data/Hlms/Pbs/GLSLES/",
+                "FileSystem", "General"
+            );
+            addResourceLocation(
+                mResourcePath + "Data/Hlms/Pbs/Materials/",
+                "FileSystem", "General"
+            );
+            addResourceLocation(
+                mResourcePath + "Data/Hlms/Pbs/Metal/",
+                "FileSystem", "General"
+            );
+            addResourceLocation(
+                mResourcePath + "Data/Hlms/Pbs/Textures/",
+                "FileSystem", "General"
+            );
         }
 
     public:
         EmptyProjectGraphicsSystem(GameState* gameState) : GraphicsSystem(gameState)
         {
-            mResourcePath = "../Data/";
+            mResourcePath = "../../../Media/";
 
             // It's recommended that you set this path to:
             //	%APPDATA%/EmptyProject/ on Windows
