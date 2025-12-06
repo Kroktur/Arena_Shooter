@@ -9,7 +9,14 @@
 #include "MyCamera.h"
 #include "MyPlayer.h"
 #include "Core/Input.h"
+#include "OgreTextureGpuManager.h"
+#include "OgreTextureFilters.h"
 
+#include "OgreHlmsManager.h"
+#include "OgreHlmsPbs.h"
+
+#include "OgreHlmsPbsDatablock.h"
+#include "OgreHlmsSamplerblock.h"
 
 namespace Demo
 {
@@ -28,12 +35,14 @@ namespace Demo
         sceneManager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
 
-        float armsLength = 2.5f;
-
 
         m_pTtem = sceneManager->createItem(
-            "cube_d.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+            "CubeFromMedia_d.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
             Ogre::SCENE_DYNAMIC);
+
+        m_pTtem->setDatablock("Marble");
+        m_pTtem->setVisibilityFlags(0x000000001);
+
 
         const size_t idx = static_cast<size_t>(0);
 
