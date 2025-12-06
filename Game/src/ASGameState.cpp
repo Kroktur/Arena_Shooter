@@ -7,6 +7,7 @@
 #include "GraphicsSystem.h"
 #include "OgreItem.h"
 #include "MyCamera.h"
+#include "MyPlayer.h"
 #include "Core/Input.h"
 #include "OgreTextureGpuManager.h"
 #include "OgreTextureFilters.h"
@@ -29,7 +30,7 @@ namespace Demo
 		m_camera = new MyCamera(mGraphicsSystem, false);
         Ogre::SceneManager* sceneManager = mGraphicsSystem->getSceneManager();
 
-        mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 0, 10));
+        //mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 0, 50));
 
         sceneManager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
@@ -51,27 +52,17 @@ namespace Demo
         mSceneNode->setPosition(0, 0, 0);
         mSceneNode->setScale(0.65f, 0.65f, 0.65f);
 
-        mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));
+        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
 
         mSceneNode->attachObject(m_pTtem);
 
         Ogre::SceneNode* rootNode = sceneManager->getRootSceneNode();
 
+        // nouvelle sceneNode player
 
 
-        Ogre::Light* light = sceneManager->createLight();
-        Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
-        lightNode->attachObject(light);
-        lightNode->setPosition(0, 0, 10);
-        light->setPowerScale(97.0f);
-        light->setType(Ogre::Light::LT_DIRECTIONAL);
-        light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
-
-        sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
-            Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
-            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
-
-
+		auto* player = new MyPlayer(this, mSceneNode);
+		player->Init();
     }
 
     void ArenaShooterGameState::update(float timeSinceLast)
@@ -81,15 +72,24 @@ namespace Demo
 
 
 		// don't touch
-        KT::Input::Update();
-
+     
 
         //input
-        if (m_camera)
-            m_camera->Input();
+      /*  if (m_camera)
+            m_camera->Input();*/
+        KT::Input::Update();
+        ExecuteAction([](IGameObject* go)
+            {
+                go->input();
+            });
         //update
         if (m_camera)
             m_camera->update(timeSinceLast);
+        ExecuteAction([&](IGameObject* go)
+            {
+                go->update(timeSinceLast);
+            });
+
        /* TutorialGameState::update(timeSinceLast);*/
         if (mDisplayHelpMode != 0)
         {
@@ -99,15 +99,10 @@ namespace Demo
           /*  mDebugText->setCaption(finalText);
             mDebugTextShadow->setCaption(finalText);*/
         }
-
-        if (m_camera)
-            m_camera->update(timeSinceLast);
-
-        //m_pTtem->getParentNode()->translate(10 * timeSinceLast, 0, 0);
     }
 
     void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
     {
-        TutorialGameState::keyReleased(arg);
+       // TutorialGameState::keyReleased(arg);
     }
 }
