@@ -1,3 +1,7 @@
+#pragma once
+#include <memory>
+#include <vector>
+
 namespace KT
 {
 	template<typename Entity>
