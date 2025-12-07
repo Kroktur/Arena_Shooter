@@ -19,9 +19,8 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
 	memset(m_ZQSD, 0, sizeof(m_ZQSD));               // 0: Z, 1: S, 2: Q, 3: D
 	memset(m_directionalCross, 0, sizeof(m_directionalCross)); // 0: Left, 1: Right, 2: Up, 3: Down
     Ogre::Camera* camera = m_graphicsSystem->getCamera();
-    Ogre::Node* cameraNode = m_useSceneNode ? camera->getParentNode() : nullptr;
     camera->setPosition(0, 30, 0);
-    camera->getOrientation();
+    camera->pitch(-Ogre::Degree(90));
  //   cameraNode->setPosition(0, 100, 0);
 
 }
@@ -52,13 +51,13 @@ void MyCamera::update(const float& dt)
         m_cameraPitch = 0.0f;
     }*/
 
-    static bool init = false;
-    if (!init)
-    {
-        //cameraNode->pitch(Ogre::Degree(90), Ogre::Node::TS_WORLD);
-        camera->pitch(-Ogre::Degree(90));
-		init = true;
-    }
+  //  static bool init = false;
+  //  if (!init)
+  //  {
+  //      //cameraNode->pitch(Ogre::Degree(90), Ogre::Node::TS_WORLD);
+  //      camera->pitch(-Ogre::Degree(90));
+		//init = true;
+  //  }
 
 	// --- Movement ---
     int camMovementZ = m_directionalCross[2] - m_directionalCross[0];

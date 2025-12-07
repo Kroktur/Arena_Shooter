@@ -1,5 +1,35 @@
 #include "MyPlayer.h"
 
+#include <iostream>
+
+#include "OgreItem.h"
+#include "OgreMesh2.h"
+#include "OgreSubMesh2.h"
+#include "OgreItem.h"
+#include "OgreSceneNode.h"
+#include "OgreHardwareVertexBuffer.h"
+#include "OgreVector3.h"
+#include "OgreMatrix4.h"
+#include "Tools/Chrono.h"
+#include "Vao/OgreAsyncTicket.h"
+#include <OgreMesh.h>
+#include <OgreSubMesh.h>
+#include <OgreHardwareBuffer.h>
+#include <OgreVector3.h>
+#include <OgreQuaternion.h>
+
+#include "MyMeshReader.h"
+#include "OgreRoot.h"
+#include "Math/MyMath.h"
+#include "Math/Vector3.h"
+
+
+std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
+{
+    auto pos = MeshTools::GetAllPosition(item);
+    return pos;
+}
+
 void MyPlayer::Init()
 {
 	m_stateMachine = std::make_unique < KT::StateMachine<MyPlayer>>(std::make_unique<IdlePlayerState>(this), 1);
@@ -7,11 +37,29 @@ void MyPlayer::Init()
 
 void MyPlayer::update(float deltaTime)
 {
-	//NE PAS TOUCHER
-	m_stateMachine->ChangeState();
-	m_stateMachine->Update(deltaTime);
-	// FIN NE PAS TOUCHER
-	moveTranslation(deltaTime);
+    //NE PAS TOUCHER
+    m_stateMachine->ChangeState();
+    m_stateMachine->Update(deltaTime);
+    // FIN NE PAS TOUCHER
+    moveTranslation(deltaTime);
+
+    Ogre::SceneNode* node = m_node;
+
+   
+    auto it = node->getAttachedObjectIterator();
+
+    
+    Ogre::MovableObject* obj = it.getNext();
+
+  
+    Ogre::Item* item = static_cast<Ogre::Item*>(obj);
+
+   static KT::Chrono<float> test;
+
+   if (test.GetElapsedTime().AsSeconds() > 5)
+   {
+       extractVertexPositions(item);
+   }
 }
 void MyPlayer::input()
 {
@@ -59,4 +107,5 @@ void IdlePlayerState::Update(const float& dt)
 
 	//condition de changement vers jump validé
 	SetNextState<JumpPlayerState>();
+
 }

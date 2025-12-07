@@ -37,11 +37,12 @@ namespace Demo
 
 
         m_pTtem = sceneManager->createItem(
-            "CubeFromMedia_d.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+            "Plane.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
             Ogre::SCENE_DYNAMIC);
 
-        m_pTtem->setDatablock("Marble");
-        m_pTtem->setVisibilityFlags(0x000000001);
+
+        //m_pTtem->setDatablock("Material.001");
+        //m_pTtem->setVisibilityFlags(0x000000001);
 
 
         const size_t idx = static_cast<size_t>(0);
@@ -50,7 +51,8 @@ namespace Demo
             ->createChildSceneNode(Ogre::SCENE_DYNAMIC);
 
         mSceneNode->setPosition(0, 0, 0);
-        mSceneNode->setScale(0.65f, 0.65f, 0.65f);
+        mSceneNode->setScale(2, 1, 2);
+
 
         /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
 
@@ -63,6 +65,20 @@ namespace Demo
 
 		auto* player = new MyPlayer(this, mSceneNode);
 		player->Init();
+
+
+        Ogre::Light* light = sceneManager->createLight();
+        Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
+        lightNode->attachObject(light);
+        lightNode->setPosition(0,150,0 );
+        light->setPowerScale(1);
+        light->setType(Ogre::Light::LT_DIRECTIONAL);
+        light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
+
+        sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
+            Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
+            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
+
     }
 
     void ArenaShooterGameState::update(float timeSinceLast)
