@@ -46,58 +46,6 @@ private:
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
 };
 
-class IdlePlayerState : public KT::IState<MyPlayer>
-{
-	public:
-	IdlePlayerState(MyPlayer* entity) :KT::IState<MyPlayer>(entity) {}
-	void OnEnter() override
-	{
-		// Logic to execute when entering idle state
-	}
-	void OnExit() override
-	{
-		// Logic to execute when exiting idle state
-	}
-	void ProcessInput() override
-	{
-		// Process input for idle state
-	}
-	void Update(const float& dt) override;
-
-	void Render(const float& alpha) override
-	{
-		// Render logic for idle state
-	}
-};
-
-class JumpPlayerState : public KT::IState<MyPlayer>
-{
-public:
-	JumpPlayerState(MyPlayer* entity) :KT::IState<MyPlayer>(entity) {}
-	void OnEnter() override
-	{
-		// Logic to execute when entering idle state
-	}
-	void OnExit() override
-	{
-		// Logic to execute when exiting idle state
-	}
-	void ProcessInput() override
-	{
-		// Process input for idle state
-	}
-	void Update(const float& dt) override
-	{
-		// Update logic for idle state
-	}
-	void Render(const float& alpha) override
-	{
-		// Render logic for idle state
-	}
-};
-
-
-
 inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : compositeGO<MyPlayer>(owner),m_stateMachine(nullptr)
 {
 	m_node = node;

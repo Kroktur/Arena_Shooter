@@ -22,6 +22,7 @@
 #include "OgreRoot.h"
 #include "Math/MyMath.h"
 #include "Math/Vector3.h"
+#include "PlayerStates.h"
 
 
 std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
@@ -99,13 +100,4 @@ void MyPlayer::inputPressed()
 		m_ZQSD[2] = true;
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::D))
 		m_ZQSD[3] = true;
-}
-
-void IdlePlayerState::Update(const float& dt)
-{
-	// Update logic for idle state
-
-	//condition de changement vers jump validé
-	SetNextState<JumpPlayerState>();
-
 }
