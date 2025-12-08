@@ -35,42 +35,39 @@ namespace Demo
 		m_camera = new MyCamera(mGraphicsSystem, false);
         m_manager = mGraphicsSystem->getSceneManager();
         // INIT ALL PULL 
-        NodePpull::Init(m_manager);
 
         //mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 0, 50));
 
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
 
-
-        m_pTtem = m_manager->createItem(
-            "Plane.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-            Ogre::SCENE_DYNAMIC);
-
+        auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionRacoon, m_manager,"Plane.mesh");
+        auto item2 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionRacoon, m_manager,"Plane.mesh" );
+        auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionCube, m_manager, "CubeFromMedia_d.mesh");
         //m_pTtem->setDatablock("Material.001");
         //m_pTtem->setVisibilityFlags(0x000000001);
 
 
         const size_t idx = static_cast<size_t>(0);
 
-        int i = NodePpullSingleton().GetValidIndex();
-        auto* node = NodePpullSingleton().GetItem(i);
+        
+        auto node = NodePull::Type::PullValidObject(NodePull::create,m_manager);
        
 
-        node->setPosition(0, 0, 0);
-        node->setScale(1, 1, 1);
+        node.second->setPosition(0, 0, 0);
+        node.second->setScale(1, 1, 1);
 
 
         /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
 
-        node->attachObject(m_pTtem);
+        node.second->attachObject(item.second);
 
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
         // nouvelle sceneNode player
 
 
-		auto* player = new MyPlayer(this, node);
+		auto* player = new MyPlayer(this, node.second);
 		player->Init();
 
 
@@ -152,5 +149,10 @@ namespace Demo
     void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
     {
        // TutorialGameState::keyReleased(arg);
+    }
+
+    Ogre::SceneManager* ArenaShooterGameState::GetSceneManager()
+    {
+        return m_manager;
     }
 }

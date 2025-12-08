@@ -10,7 +10,16 @@ class MyPlayer : public IGameObject, public KT::CompositeCRTP<MyPlayer,IGameObje
 {
 public:
 	MyPlayer(IComposite<IGameObject,Demo::ArenaShooterGameState>* owner,Ogre::SceneNode* node);
-	~MyPlayer() override= default;
+	~MyPlayer() override
+	{
+		auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+		auto manager = Ccrtp->GetRoot()->AsRoot()->GetSceneManager();
+		auto it = m_node->getAttachedObjectIterator();
+
+		ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
+		m_node->detachAllObjects();
+		NodePull::Type::ResetObject(m_node, NodePull::destroy, manager);
+	}
 	void Init() override;
 	void update(float deltaTime) override;
 	void input() override;

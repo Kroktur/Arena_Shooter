@@ -27,12 +27,12 @@ class MeshComponent : public KT::Component<Entity>
 {
 public:
 	MeshComponent(int nodeIndex, Ogre::Item* item) :m_item(item),m_nodeIndex(nodeIndex) {
-		m_node = NodePpullSingleton().GetItem(nodeIndex);
+		
 	}
 	~MeshComponent()
 	{
 		m_node->detachObject(m_item);
-		NodePpullSingleton().ResetItem(m_nodeIndex);
+		
 	}
 	Ogre::SceneNode* GetNode() const
 	{

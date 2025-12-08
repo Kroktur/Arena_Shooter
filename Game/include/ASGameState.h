@@ -18,10 +18,6 @@ namespace Demo
 	class ArenaShooterGameState : public TutorialGameState , public KT::ExcludeRootCRTP<ArenaShooterGameState,IGameObject,ArenaShooterGameState>
 	{
 		MyCamera* m_camera;
-		Ogre::Item* m_pTtem;
-
-
-	private:
 		Ogre::SceneManager* m_manager;
 	public:
 	/*	void DetachItem(int nodeIndex, int itemIndex);
@@ -37,7 +33,7 @@ namespace Demo
 		void update(float timeSinceLast) override;
 
 		void keyReleased(const SDL_KeyboardEvent& arg) override;
-		
+		Ogre::SceneManager* GetSceneManager();
 	};
 }
 #endif
