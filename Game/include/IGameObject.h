@@ -4,10 +4,6 @@
 #include "Core/CompositeCrtp.h"
 
 
-namespace Demo
-{
-	class ArenaShooterGameState;
-}
 
 class IGameObject : public KT::ComponentManager<IGameObject>
 {
@@ -19,9 +15,3 @@ public:
 	virtual void input() = 0;
 };
 
-
-template  <typename derived>
-using compositeGO = KT::CompositeCRTP<derived,IGameObject,Demo::ArenaShooterGameState>;
-
-template  <typename derived>
-using leafGO = KT::CompositeCRTP<derived, IGameObject, Demo::ArenaShooterGameState>;

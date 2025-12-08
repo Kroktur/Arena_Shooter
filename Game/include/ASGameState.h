@@ -8,6 +8,7 @@
 
 #include "OgreCommon.h"
 #include "MyCamera.h"
+#include "NodePull.h"
 #include "Core/CompositeCrtp.h"
 
 namespace Demo
@@ -21,8 +22,14 @@ namespace Demo
 
 
 	private:
-		Ogre::SceneNode* mSceneNode;
+		Ogre::SceneManager* m_manager;
 	public:
+	/*	void DetachItem(int nodeIndex, int itemIndex);
+
+		int RegisterItem();
+		Ogre::Item* GetItem(int index);
+		void DestroyItem(int index);*/
+
 		ArenaShooterGameState(const Ogre::String& helpDescription);
 
 		void createScene01() override;
@@ -30,7 +37,7 @@ namespace Demo
 		void update(float timeSinceLast) override;
 
 		void keyReleased(const SDL_KeyboardEvent& arg) override;
-
+		
 	};
 }
 #endif
