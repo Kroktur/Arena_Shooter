@@ -13,9 +13,11 @@ public:
 	~MyPlayer() override
 	{
 		auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
-		auto manager = Ccrtp->GetRoot()->AsRoot()->GetSceneManager();
+		auto root = Ccrtp->GetRoot();
+		if (!root)
+			return;
+		auto manager = root->AsRoot()->GetSceneManager();
 		auto it = m_node->getAttachedObjectIterator();
-
 		ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
 		m_node->detachAllObjects();
 		NodePull::Type::ResetObject(m_node, NodePull::destroy, manager);
