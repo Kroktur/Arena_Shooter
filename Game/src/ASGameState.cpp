@@ -40,6 +40,9 @@ namespace Demo
             "Plane.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
             Ogre::SCENE_DYNAMIC);
 
+        Ogre::Item* ground = sceneManager->createItem(
+            "Plane.mesh", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+			Ogre::SCENE_DYNAMIC);
 
         //m_pTtem->setDatablock("Material.001");
         //m_pTtem->setVisibilityFlags(0x000000001);
@@ -47,25 +50,50 @@ namespace Demo
 
         const size_t idx = static_cast<size_t>(0);
 
-        mSceneNode = sceneManager->getRootSceneNode(Ogre::SCENE_DYNAMIC)
+		//plane
+
+        Ogre::SceneNode* groundNode = sceneManager->getRootSceneNode(Ogre::SCENE_DYNAMIC)
             ->createChildSceneNode(Ogre::SCENE_DYNAMIC);
 
-        mSceneNode->setPosition(0, 0, 0);
-        mSceneNode->setScale(2, 1, 2);
+		groundNode->setPosition(0, 0, 0);
+        groundNode->setScale(20, 0, 20);
 
+        Ogre::HlmsManager* hlmsManager = mGraphicsSystem->getRoot()->getHlmsManager();
+        Ogre::HlmsDatablock* groundMat = hlmsManager->getHlms(Ogre::HLMS_PBS)
+            ->createDatablock("PlayerColor",
+                "PlayerColor",
+                Ogre::HlmsMacroblock(),
+                Ogre::HlmsBlendblock(),
+                Ogre::HlmsParamVec());
+
+        static_cast<Ogre::HlmsPbsDatablock*>(groundMat)->setDiffuse(Ogre::Vector3(1.0f, 1.0f, 1.0f));
+        ground->setDatablock(groundMat);
+
+        groundNode->attachObject(ground);
+
+		auto* plane = new MyPlayer(this, groundNode);
+		plane->Init();
+
+        //player
+
+        m_playerNode = sceneManager->getRootSceneNode(Ogre::SCENE_DYNAMIC)
+            ->createChildSceneNode(Ogre::SCENE_DYNAMIC);
+
+        m_playerNode->setPosition(0, 0, 0);
+        m_playerNode->setScale(1, 1, 1);
 
         /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
 
-        mSceneNode->attachObject(m_pTtem);
+        m_playerNode->attachObject(m_pTtem);
 
         Ogre::SceneNode* rootNode = sceneManager->getRootSceneNode();
 
         // nouvelle sceneNode player
 
-
-		auto* player = new MyPlayer(this, mSceneNode);
+		auto* player = new MyPlayer(this, m_playerNode);
 		player->Init();
 
+        m_camera->setTarget(m_playerNode);
 
         Ogre::Light* light = sceneManager->createLight();
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();

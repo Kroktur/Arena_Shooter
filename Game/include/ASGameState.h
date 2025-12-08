@@ -12,8 +12,6 @@
 
 namespace Demo
 {
-
-
 	class ArenaShooterGameState : public TutorialGameState , public KT::ExcludeRootCRTP<ArenaShooterGameState,IGameObject,ArenaShooterGameState>
 	{
 		MyCamera* m_camera;
@@ -22,6 +20,7 @@ namespace Demo
 
 	private:
 		Ogre::SceneNode* mSceneNode;
+		Ogre::SceneNode* m_playerNode;
 	public:
 		ArenaShooterGameState(const Ogre::String& helpDescription);
 

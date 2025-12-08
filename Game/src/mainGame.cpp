@@ -32,7 +32,10 @@ namespace Demo
         {
             return GraphicsSystem::setupCompositor();
         }
-
+        void createCamera() override
+        {
+            mCamera = mSceneManager->createCamera("Main Camera");
+        }
         void setupResources() override
         {
             GraphicsSystem::setupResources();

@@ -17,6 +17,9 @@ public:
 	// --- getters ---
 	Ogre::Camera* getCamera() const;
 
+	// --- setters ---
+	void setTarget(Ogre::SceneNode* target);
+
 	// --- input ---
 	void onMouseMoved(const SDL_Event& arg);
 	bool keyPressed(const SDL_KeyboardEvent& arg);  // Returns true if we've handled the event
@@ -31,8 +34,8 @@ private:
 	Ogre::Vector3 m_velocity; // speed memory (for the overshoot)
 
 	// FPS camera control
-	float m_cameraYaw;   // can be a float
-	float m_cameraPitch; // can be a float
+	float m_cameraYaw;
+	float m_cameraPitch;
 
 	// --- booleans ---
 	bool m_useSceneNode;
@@ -42,6 +45,8 @@ private:
 
 	// need our own graphics system pointer - TDL
 	Demo::GraphicsSystem* m_graphicsSystem;
+
+	Ogre::SceneNode* m_target = nullptr;
 
 public:
 	float m_cameraBaseSpeed;
