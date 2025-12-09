@@ -22,7 +22,7 @@
 #include "OgreRoot.h"
 #include "Math/MyMath.h"
 #include "Math/Vector3.h"
-
+#include <Animation/OgreSkeletonInstance.h>
 
 std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
 {
@@ -45,7 +45,7 @@ void MyPlayer::update(float deltaTime)
 
     Ogre::SceneNode* node = m_node;
 
-   
+
     auto it = node->getAttachedObjectIterator();
 
     
@@ -55,6 +55,23 @@ void MyPlayer::update(float deltaTime)
     Ogre::Item* item = static_cast<Ogre::Item*>(obj);
 
    static KT::Chrono<float> test;
+
+	//ici
+   static Ogre::SkeletonAnimation* mAnimation1 = nullptr;
+  static  Ogre::SkeletonInstance* skeletonInstance = item->getSkeletonInstance();
+
+  static bool init = false;
+	if (!init)
+	{
+		skeletonInstance->addAnimationsFromSkeleton(
+			"Armature.skeleton", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+		mAnimation1 = skeletonInstance->getAnimation("my_animation");
+		mAnimation1->setEnabled(true);
+		init = true;
+	}
+
+	mAnimation1->addTime(deltaTime);
+
 
    if (test.GetElapsedTime().AsSeconds() > 5)
    {

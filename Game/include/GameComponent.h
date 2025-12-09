@@ -26,13 +26,12 @@ template<typename Entity>
 class MeshComponent : public KT::Component<Entity>
 {
 public:
-	MeshComponent(int nodeIndex, Ogre::Item* item) :m_item(item),m_nodeIndex(nodeIndex) {
+	MeshComponent(Ogre::SceneNode* node,Ogre::Item* item) :m_item(item),m_node(node) {
 		
 	}
 	~MeshComponent()
 	{
-		m_node->detachObject(m_item);
-		
+
 	}
 	Ogre::SceneNode* GetNode() const
 	{
@@ -50,8 +49,11 @@ public:
 	{
 		return m_item;
 	}
+	void Detach()
+	{
+		m_node->detachObject(m_item);
+	}
 private:
-	int m_nodeIndex;
 	Ogre::SceneNode* m_node;
 	Ogre::Item* m_item;
 };
