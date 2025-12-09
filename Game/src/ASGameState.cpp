@@ -52,15 +52,33 @@ namespace Demo
 
         
         auto node = NodePull::Type::PullValidObject(NodePull::create,m_manager);
-       
-
+        auto node2 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+        auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
         node.second->setPosition(0, 0, 0);
-        node.second->setScale(1, 1, 1);
+        node.second->setScale(10, 10, 10);
 
 
         /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
 
         node.second->attachObject(item.second);
+
+        node2.second->setPosition(0, 0, 0);
+        node2.second->setScale(10, 10, 10);
+
+
+        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
+
+        node2.second->attachObject(item2.second);
+
+
+        node3.second->setPosition(0, -10, 0);
+        node3.second->setScale(100, 1, 100);
+
+
+        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
+        item3.second->setDatablock("Marble");
+        node3.second->attachObject(item3.second);
+
 
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 

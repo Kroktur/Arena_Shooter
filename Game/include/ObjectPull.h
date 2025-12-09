@@ -40,9 +40,16 @@ public:
 		}
 
 		PullItem<FN, Args...>(std::forward<FN>(fn), std::forward<Args>(args)...);
-		auto index = m_available.front();
-		m_available.pop_front();
-		return keyType{ index,m_allNode[index] };
+		for (auto it = m_available.begin(); it != m_available.end(); ++it)
+		{
+			int index = *it;
+			if (std::forward<CD>(cd)(m_allNode[index]))
+			{
+				m_available.erase(it);
+				return keyType{ index,m_allNode[index] };
+			}
+		}
+		throw std::runtime_error("impossible to find oune");
 	}
 
 	static PullType* GetObject(int index)
