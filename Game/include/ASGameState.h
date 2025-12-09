@@ -26,6 +26,7 @@ namespace Demo
 		Ogre::Item* GetItem(int index);
 		void DestroyItem(int index);*/
 
+		
 		ArenaShooterGameState(const Ogre::String& helpDescription);
 
 		void createScene01() override;

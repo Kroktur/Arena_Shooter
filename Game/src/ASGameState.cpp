@@ -32,8 +32,11 @@ namespace Demo
     void ArenaShooterGameState::createScene01()
     {
         TutorialGameState::createScene01();
-		m_camera = new MyCamera(mGraphicsSystem, false);
         m_manager = mGraphicsSystem->getSceneManager();
+
+
+		m_camera = new MyCamera(mGraphicsSystem, false);
+      
         // INIT ALL PULL 
 
         //mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 0, 50));
@@ -41,9 +44,9 @@ namespace Demo
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
 
-        auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionRacoon, m_manager,"Plane.mesh");
-        auto item2 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionRacoon, m_manager,"Plane.mesh" );
-        auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionCube, m_manager, "CubeFromMedia_d.mesh");
+        auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, m_manager, "Plane.mesh");
+        auto item2 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, m_manager,"Plane.mesh" );
+        auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
         //m_pTtem->setDatablock("Material.001");
         //m_pTtem->setVisibilityFlags(0x000000001);
 
