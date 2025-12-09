@@ -63,6 +63,21 @@ void MyPlayer::update(float deltaTime)
 }
 void MyPlayer::input()
 {
+	if (KT::Input::isPressed<KT::KEY>(KT::KEY::A))
+	{
+		auto cast = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+		auto player  = new MyPlayer2(cast, m_node);
+		player->Init();
+	}
+
+	if (KT::Input::isPressed<KT::KEY>(KT::KEY::P))
+	{
+		GetComponent<LivingComponent<IGameObject>>()->EnableDeath();
+	}
+	std::cout << this->GetChild().size() << " \n";
+
+
+
 	//NE PAS TOUCHER
 	m_stateMachine->ProcessInput();
 	// FIN NE PAS TOUCHER

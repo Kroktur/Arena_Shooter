@@ -1,15 +1,27 @@
 #pragma once
 #include "ASGameState.h"
+#include "GameComponent.h"
 #include "IGameObject.h"
 #include "Core/CompositeCrtp.h"
 #include "Core/Input.h"
 #include "Core/StateMachine.h"
 
-class MyPlayer : public IGameObject, public compositeGO<MyPlayer>
+class MyPlayer : public IGameObject, public KT::CompositeCRTP<MyPlayer,IGameObject,Demo::ArenaShooterGameState>
 {
 public:
 	MyPlayer(IComposite<IGameObject,Demo::ArenaShooterGameState>* owner,Ogre::SceneNode* node);
-	~MyPlayer() override= default;
+	~MyPlayer() override
+	{
+		auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+		auto root = Ccrtp->GetRoot();
+		if (!root)
+			return;
+		auto manager = root->AsRoot()->GetSceneManager();
+		auto it = m_node->getAttachedObjectIterator();
+		ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
+		m_node->detachAllObjects();
+		NodePull::Type::ResetObject(m_node, NodePull::destroy, manager);
+	}
 	void Init() override;
 	void update(float deltaTime) override;
 	void input() override;
@@ -98,7 +110,58 @@ public:
 
 
 
-inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : compositeGO<MyPlayer>(owner),m_stateMachine(nullptr)
+inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),m_stateMachine(nullptr)
 {
 	m_node = node;
+	AddComponent<LivingComponent<IGameObject>>();
 }
+
+class MyPlayer2 : public IGameObject, public KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>
+{
+public:
+	MyPlayer2(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>(owner)
+	{
+		m_node = node;
+	}
+	void Init() override
+	{
+		
+	}
+	void update(float deltaTime) override
+	{
+		int toto = 0;
+	}
+	void input() override
+	{
+		
+	}
+	//	// --- getters ---
+	//	float getHealth() const;
+	//	float getRunningSpeed() const;
+	//	float getMana() const;
+	//	float getMaxHealth() const;
+	//
+	//	// --- setters ---
+	//	void setHealth(float health);a
+	//	void setRunningSpeed(float speed);
+	//	void setMana(float mana);
+	//
+	//	// --- actions ---
+	//	void takeDamage(float damage);
+	//	void recoverMana(float amount);
+	//	void consumeMana(float amount);
+
+		// --- movement ---
+	void moveTranslation(float deltaTime) const;
+	void inputPressed();
+	//private:
+	//	float m_health;
+	//	float m_mana;
+	float m_runningSpeed;
+	//	float m_shootCadence;
+	//	const float m_maxHealth = 100.0f;
+	//	const float m_maxMana = 100.0f;
+private:
+	bool m_ZQSD[4];
+	Ogre::SceneNode* m_node;
+};
