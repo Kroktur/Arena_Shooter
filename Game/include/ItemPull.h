@@ -31,11 +31,6 @@ namespace ItemPull
         {
 			return;
         };
-
-   
-
-
-   
     static bool ConditionStr(Ogre::Item* node,const std::string& str)
     {
         return node->getMesh()->getName() == str;

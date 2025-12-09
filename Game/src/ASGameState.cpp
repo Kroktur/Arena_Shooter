@@ -29,7 +29,16 @@ namespace Demo
     {
        
     }
-    void ArenaShooterGameState::createScene01()
+
+	ArenaShooterGameState::~ArenaShooterGameState()
+	{
+      /*  ExecuteAction([&](IGameObject* go)
+            {
+                go->Exit();
+            });*/
+	}
+
+	void ArenaShooterGameState::createScene01()
     {
         TutorialGameState::createScene01();
         m_manager = mGraphicsSystem->getSceneManager();
@@ -59,10 +68,6 @@ namespace Demo
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
         node.second->setPosition(0, 0, 0);
         node.second->setScale(10, 10, 10);
-
-
-        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
-
         node.second->attachObject(item.second);
 
         node2.second->setPosition(0, 0, 0);
@@ -86,11 +91,17 @@ namespace Demo
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
         // nouvelle sceneNode player
+       
+
+		for (int i = 0; i < 500; ++i)
+            new MyPlayer(this);
 
 
-		auto* player = new MyPlayer(this, node.second);
-		player->Init();
 
+        ExecuteAction([&](IGameObject* go)
+            {
+                go->Init();
+            });
 
         Ogre::Light* light = m_manager->createLight();
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
@@ -175,5 +186,19 @@ namespace Demo
     Ogre::SceneManager* ArenaShooterGameState::GetSceneManager()
     {
         return m_manager;
+    }
+
+    void ArenaShooterGameState::destroyScene()
+    {
+          ExecuteAction([&](IGameObject* go)
+          {
+              go->Exit();
+          });
+        TutorialGameState::destroyScene();
+    }
+
+    void ArenaShooterGameState::deinitialize()
+    {
+	    TutorialGameState::deinitialize();
     }
 }

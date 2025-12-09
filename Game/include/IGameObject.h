@@ -11,6 +11,7 @@ public:
 	IGameObject() : KT::ComponentManager<IGameObject>(this){}
 	virtual ~IGameObject() = default;
 	virtual void Init() = 0;
+	virtual void Exit() = 0;
 	virtual void update(float deltaTime) = 0;
 	virtual void input() = 0;
 };

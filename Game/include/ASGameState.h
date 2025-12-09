@@ -25,16 +25,16 @@ namespace Demo
 		int RegisterItem();
 		Ogre::Item* GetItem(int index);
 		void DestroyItem(int index);*/
-
-		
 		ArenaShooterGameState(const Ogre::String& helpDescription);
-
+		~ArenaShooterGameState();
 		void createScene01() override;
 
 		void update(float timeSinceLast) override;
 
 		void keyReleased(const SDL_KeyboardEvent& arg) override;
 		Ogre::SceneManager* GetSceneManager();
+		void destroyScene() override;
+		void deinitialize() override;
 	};
 }
 #endif
