@@ -22,6 +22,7 @@ public:
 	void SetOwner(composite* parent);
 
 	virtual void ExecuteAction(const std::function<void(BaseType*)>& fn) = 0;
+	virtual void ExecuteAction(const std::function<void(IComponent*)>& fn) = 0;
 	virtual BaseType* AsBase() = 0;
 	virtual const BaseType* AsBase() const = 0;
 
@@ -54,6 +55,7 @@ public:
 	BaseType* AsBase() override = 0;
 	const BaseType* AsBase() const override = 0;
 	void ExecuteAction(const std::function<void(BaseType*)>& fn) override = 0;
+	void ExecuteAction(const std::function<void(component*)>& fn) override = 0;
 	bool IsInSubTree(component* component) const override;
 	bool HasChild(component* component) const;
 	size_t Size() const;
@@ -79,6 +81,7 @@ public:
 
 	~IRoot() override = default;
 	void ExecuteAction(const std::function<void(BaseType*)>& fn) override = 0;
+	void ExecuteAction(const std::function<void(component*)>& fn) override = 0;
 	BaseType* AsBase() override = 0;
 	const BaseType* AsBase() const override = 0;
 	virtual RootType* AsRoot() = 0;
@@ -100,6 +103,7 @@ public:
 	ILeaf(composite* owner);
 	~ILeaf() override = default;
 	void ExecuteAction(const std::function<void(BaseType*)>& fn) override = 0;
+	void ExecuteAction(const std::function<void(component*)>& fn) override = 0;
 	BaseType* AsBase() override = 0;
 	const BaseType* AsBase() const override = 0;
 };
