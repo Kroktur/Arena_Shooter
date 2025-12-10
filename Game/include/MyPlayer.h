@@ -114,6 +114,10 @@ public:
 	{
 		
 	}
+	 void Exit() override
+	{
+		
+	}
 	void update(float deltaTime) override
 	{
 		int toto = 0;

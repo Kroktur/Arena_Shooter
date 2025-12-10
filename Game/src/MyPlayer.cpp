@@ -85,16 +85,6 @@ void MyPlayer::update(float deltaTime)
     // FIN NE PAS TOUCHER
     moveTranslation(deltaTime);
 
-    /*Ogre::SceneNode* node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
-
-
-    auto it = node->getAttachedObjectIterator();
-
-    
-    Ogre::MovableObject* obj = it.getNext();
-
-  
-    Ogre::Item* item = static_cast<Ogre::Item*>(obj);*/
 	auto item = GetComponent<MeshComponent<IGameObject>>()->GetItem();
 	static KT::Chrono<float> test;
    auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
@@ -109,9 +99,14 @@ void MyPlayer::input()
 {
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::A))
 	{
-		auto cast = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
-		/*auto player  = new MyPlayer2(cast, m_node);
-		player->Init();*/
+		auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+		auto root = Ccrtp->GetRoot();
+		root->AsRoot()->ToDoAtBegin([&]
+		{
+				auto* cast = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+				auto player = new MyPlayer2(cast,nullptr);
+				player->Init();
+		});
 	}
 
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::P))

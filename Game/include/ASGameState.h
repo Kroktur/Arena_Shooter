@@ -19,6 +19,8 @@ namespace Demo
 	{
 		MyCamera* m_camera;
 		Ogre::SceneManager* m_manager;
+		std::vector<std::function<void()>> instantiate;
+		void ExecuteBegin();
 	public:
 	/*	void DetachItem(int nodeIndex, int itemIndex);
 
@@ -35,6 +37,8 @@ namespace Demo
 		Ogre::SceneManager* GetSceneManager();
 		void destroyScene() override;
 		void deinitialize() override;
+		void ToDoAtBegin(std::function<void()> fn);
+	
 	};
 }
 #endif

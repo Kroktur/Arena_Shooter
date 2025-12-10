@@ -96,6 +96,7 @@ namespace Demo
 
     void ArenaShooterGameState::update(float timeSinceLast)
     {
+        ExecuteBegin();
         //input
 		KT::Input::Update();
 
@@ -170,5 +171,17 @@ namespace Demo
     void ArenaShooterGameState::deinitialize()
     {
 	    TutorialGameState::deinitialize();
+    }
+
+    void ArenaShooterGameState::ToDoAtBegin(std::function<void()> fn)
+    {
+        instantiate.push_back(fn);
+    }
+
+    void ArenaShooterGameState::ExecuteBegin()
+    {
+        for (auto& fn : instantiate)
+            fn();
+        instantiate.clear();
     }
 }
