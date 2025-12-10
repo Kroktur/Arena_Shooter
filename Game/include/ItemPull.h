@@ -31,14 +31,8 @@ namespace ItemPull
         {
 			return;
         };
-
-
-    static auto conditionRacoon = [](Ogre::Item* node) -> bool
-        {
-            return node->getMesh()->getName() == "Plane.mesh";
-        };
-    static auto conditionCube = [](Ogre::Item* node) -> bool
-        {
-            return node->getMesh()->getName() == "CubeFromMedia_d.mesh";
-        };
+    static bool ConditionStr(Ogre::Item* node,const std::string& str)
+    {
+        return node->getMesh()->getName() == str;
+    }
 }

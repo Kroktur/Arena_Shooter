@@ -29,65 +29,56 @@ namespace Demo
     {
        
     }
-    void ArenaShooterGameState::createScene01()
+
+	ArenaShooterGameState::~ArenaShooterGameState()
+	{
+      /*  ExecuteAction([&](IGameObject* go)
+            {
+                go->Exit();
+            });*/
+	}
+
+	void ArenaShooterGameState::createScene01()
     {
         TutorialGameState::createScene01();
-		m_camera = new MyCamera(mGraphicsSystem, false);
         m_manager = mGraphicsSystem->getSceneManager();
+
+		m_camera = new MyCamera(mGraphicsSystem, false);
+      
         // INIT ALL PULL 
-
-        //mGraphicsSystem->getCamera()->setPosition(Ogre::Vector3(0, 0, 50));
-
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
+        auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, m_manager, "Plane.mesh");
+        auto item2 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, m_manager,"Plane.mesh" );
+        auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
 
-        auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionRacoon, m_manager,"Plane.mesh");
-        auto item2 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionRacoon, m_manager,"Plane.mesh" );
-        auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, ItemPull::conditionCube, m_manager, "CubeFromMedia_d.mesh");
-        //m_pTtem->setDatablock("Material.001");
-        //m_pTtem->setVisibilityFlags(0x000000001);
-
-
-        const size_t idx = static_cast<size_t>(0);
-
-        
         auto node = NodePull::Type::PullValidObject(NodePull::create,m_manager);
         auto node2 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+
         node.second->setPosition(0, 0, 0);
         node.second->setScale(10, 10, 10);
-
-
-        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
-
         node.second->attachObject(item.second);
 
         node2.second->setPosition(0, 0, 0);
         node2.second->setScale(10, 10, 10);
 
-
-        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
-
         node2.second->attachObject(item2.second);
-
 
         node3.second->setPosition(0, -10, 0);
         node3.second->setScale(100, 1, 100);
 
-
-        /*mSceneNode->roll(Ogre::Radian((Ogre::Real)idx));*/
         item3.second->setDatablock("Marble");
         node3.second->attachObject(item3.second);
 
-
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
-        // nouvelle sceneNode player
+		new MyPlayer(this);
 
-
-		auto* player = new MyPlayer(this, node.second);
-		player->Init();
-
+        ExecuteAction([&](IGameObject* go)
+            {
+                go->Init();
+            });
 
         Ogre::Light* light = m_manager->createLight();
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
@@ -105,21 +96,15 @@ namespace Demo
 
     void ArenaShooterGameState::update(float timeSinceLast)
     {
-        //TODO GameLoop here !!
-
-
-
-		// don't touch
-     
-
+        ExecuteBegin();
         //input
-      /*  if (m_camera)
-            m_camera->Input();*/
-        KT::Input::Update();
+		KT::Input::Update();
+
         ExecuteAction([](IGameObject* go)
             {
                 go->input();
             });
+
         //update
         if (m_camera)
             m_camera->update(timeSinceLast);
@@ -128,14 +113,13 @@ namespace Demo
                 go->update(timeSinceLast);
             });
 
-       /* TutorialGameState::update(timeSinceLast);*/
         if (mDisplayHelpMode != 0)
         {
             // Show FPS
             Ogre::String finalText;
             generateDebugText(timeSinceLast, finalText);
-          /*  mDebugText->setCaption(finalText);
-            mDebugTextShadow->setCaption(finalText);*/
+
+
         }
 
         static KT::Chrono<float> destroy;
@@ -158,6 +142,7 @@ namespace Demo
         });
         for (int i = (static_cast<int>(toDelet.size()) - 1); i >= 0 ; --i)
         {
+            toDelet[i]->AsBase()->Exit();
             delete toDelet[i];
         }
         toDelet.clear();
@@ -172,5 +157,31 @@ namespace Demo
     Ogre::SceneManager* ArenaShooterGameState::GetSceneManager()
     {
         return m_manager;
+    }
+
+    void ArenaShooterGameState::destroyScene()
+    {
+          ExecuteAction([&](IGameObject* go)
+          {
+              go->Exit();
+          });
+        TutorialGameState::destroyScene();
+    }
+
+    void ArenaShooterGameState::deinitialize()
+    {
+	    TutorialGameState::deinitialize();
+    }
+
+    void ArenaShooterGameState::ToDoAtBegin(std::function<void()> fn)
+    {
+        instantiate.push_back(fn);
+    }
+
+    void ArenaShooterGameState::ExecuteBegin()
+    {
+        for (auto& fn : instantiate)
+            fn();
+        instantiate.clear();
     }
 }

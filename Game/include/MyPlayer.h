@@ -9,20 +9,10 @@
 class MyPlayer : public IGameObject, public KT::CompositeCRTP<MyPlayer,IGameObject,Demo::ArenaShooterGameState>
 {
 public:
-	MyPlayer(IComposite<IGameObject,Demo::ArenaShooterGameState>* owner,Ogre::SceneNode* node);
-	~MyPlayer() override
-	{
-		auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
-		auto root = Ccrtp->GetRoot();
-		if (!root)
-			return;
-		auto manager = root->AsRoot()->GetSceneManager();
-		auto it = m_node->getAttachedObjectIterator();
-		ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
-		m_node->detachAllObjects();
-		NodePull::Type::ResetObject(m_node, NodePull::destroy, manager);
-	}
+	MyPlayer(IComposite<IGameObject,Demo::ArenaShooterGameState>* owner);
+	~MyPlayer() override;
 	void Init() override;
+	void Exit() override;
 	void update(float deltaTime) override;
 	void input() override;
 //	// --- getters ---
@@ -42,7 +32,7 @@ public:
 //	void consumeMana(float amount);
 
 	// --- movement ---
-	void moveTranslation(float deltaTime) const;
+	void moveTranslation(float deltaTime);
 	void inputPressed();
 //private:
 //	float m_health;
@@ -53,8 +43,6 @@ public:
 //	const float m_maxMana = 100.0f;
 private:
 	bool m_ZQSD[4];
-	Ogre::SceneNode* m_node;
-
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
 };
 
@@ -110,10 +98,9 @@ public:
 
 
 
-inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),m_stateMachine(nullptr)
+inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) : KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),m_stateMachine(nullptr)
 {
-	m_node = node;
-	AddComponent<LivingComponent<IGameObject>>();
+
 }
 
 class MyPlayer2 : public IGameObject, public KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>
@@ -124,6 +111,10 @@ public:
 		m_node = node;
 	}
 	void Init() override
+	{
+		
+	}
+	 void Exit() override
 	{
 		
 	}

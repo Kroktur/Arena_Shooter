@@ -22,7 +22,7 @@
 #include "OgreRoot.h"
 #include "Math/MyMath.h"
 #include "Math/Vector3.h"
-
+#include <Animation/OgreSkeletonInstance.h>
 
 std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
 {
@@ -30,9 +30,51 @@ std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
     return pos;
 }
 
+MyPlayer::~MyPlayer()
+{
+	//auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+	//auto root = Ccrtp->GetRoot();
+	//if (!root)
+	//	return;
+	//auto manager = root->AsRoot()->GetSceneManager();
+	//auto it = m_node->getAttachedObjectIterator();
+	//ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
+	//m_node->detachAllObjects();
+	//NodePull::Type::ResetObject(m_node, NodePull::destroy, manager);
+}
+
 void MyPlayer::Init()
 {
 	m_stateMachine = std::make_unique < KT::StateMachine<MyPlayer>>(std::make_unique<IdlePlayerState>(this), 1);
+	AddComponent<LivingComponent<IGameObject>>();
+	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+	auto root = Ccrtp->GetRoot();
+	auto manager = root->AsRoot()->GetSceneManager();
+	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, manager, "Plane.mesh");
+	auto mnode = NodePull::Type::PullValidObject(NodePull::create, manager);
+	mnode.second->setPosition(0, 0, 0);
+	mnode.second->setScale(10, 10, 10);
+	mnode.second->attachObject(item.second);
+	AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
+	auto animation = AddComponent<AnimationComponent<IGameObject>>();
+	animation->SetSkeleton(item.second, "Armature.skeleton");
+	animation->AddAnimation("my_animation");
+	animation->SetAnimation(0);
+	animation->GetCurrentAnimation()->setEnabled(true);
+	extractVertexPositions(item.second);
+}
+
+void MyPlayer::Exit()
+{
+	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+	auto root = Ccrtp->GetRoot();
+	auto manager = root->AsRoot()->GetSceneManager();
+	auto mesh = GetComponent<MeshComponent<IGameObject>>();
+	auto node = mesh->GetNode();
+	auto it = node->getAttachedObjectIterator();
+	ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
+	node->detachAllObjects();
+	NodePull::Type::ResetObject(node, NodePull::reset);
 }
 
 void MyPlayer::update(float deltaTime)
@@ -43,31 +85,28 @@ void MyPlayer::update(float deltaTime)
     // FIN NE PAS TOUCHER
     moveTranslation(deltaTime);
 
-    Ogre::SceneNode* node = m_node;
-
-   
-    auto it = node->getAttachedObjectIterator();
-
-    
-    Ogre::MovableObject* obj = it.getNext();
-
-  
-    Ogre::Item* item = static_cast<Ogre::Item*>(obj);
-
-   static KT::Chrono<float> test;
+	auto item = GetComponent<MeshComponent<IGameObject>>()->GetItem();
+	static KT::Chrono<float> test;
+   auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
+	Animation->addTime(deltaTime);
 
    if (test.GetElapsedTime().AsSeconds() > 5)
    {
-       extractVertexPositions(item);
+       //extractVertexPositions(item);
    }
 }
 void MyPlayer::input()
 {
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::A))
 	{
-		auto cast = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
-		auto player  = new MyPlayer2(cast, m_node);
-		player->Init();
+		auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+		auto root = Ccrtp->GetRoot();
+		root->AsRoot()->ToDoAtBegin([&]
+		{
+				auto* cast = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+				auto player = new MyPlayer2(cast,nullptr);
+				player->Init();
+		});
 	}
 
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::P))
@@ -85,7 +124,7 @@ void MyPlayer::input()
 	inputPressed();
 }
 
-void MyPlayer::moveTranslation(float deltaTime) const
+void MyPlayer::moveTranslation(float deltaTime)
 {
 	float x = 0;
 	float z = 0;
@@ -97,7 +136,8 @@ void MyPlayer::moveTranslation(float deltaTime) const
 		z = 10 * deltaTime;
 	if (m_ZQSD[3])
 		x = 10 * deltaTime;
-	m_node->translate(x, 0, z);
+	auto mesh = GetComponent<MeshComponent<IGameObject>>();
+	mesh->GetNode()->translate(x, 0, z);
 }
 
 void MyPlayer::inputPressed()
