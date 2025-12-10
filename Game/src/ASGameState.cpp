@@ -48,22 +48,13 @@ namespace Demo
         // INIT ALL PULL 
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
-        auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, m_manager, "Plane.mesh");
-        auto item2 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, m_manager,"Plane.mesh" );
+      
         auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
 
-        auto node = NodePull::Type::PullValidObject(NodePull::create,m_manager);
-        auto node2 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+    
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
 
-        node.second->setPosition(0, 0, 0);
-        node.second->setScale(10, 10, 10);
-        node.second->attachObject(item.second);
-
-        node2.second->setPosition(0, 0, 0);
-        node2.second->setScale(10, 10, 10);
-
-        node2.second->attachObject(item2.second);
+       
 
         node3.second->setPosition(0, -10, 0);
         node3.second->setScale(100, 1, 100);
