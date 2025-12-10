@@ -47,7 +47,6 @@ namespace Demo
         //m_pTtem->setDatablock("Material.001");
         //m_pTtem->setVisibilityFlags(0x000000001);
 
-
         const size_t idx = static_cast<size_t>(0);
 
 		//plane
@@ -60,8 +59,8 @@ namespace Demo
 
         Ogre::HlmsManager* hlmsManager = mGraphicsSystem->getRoot()->getHlmsManager();
         Ogre::HlmsDatablock* groundMat = hlmsManager->getHlms(Ogre::HLMS_PBS)
-            ->createDatablock("PlayerColor",
-                "PlayerColor",
+            ->createDatablock("GroundColor",
+                "GroundColor",
                 Ogre::HlmsMacroblock(),
                 Ogre::HlmsBlendblock(),
                 Ogre::HlmsParamVec());
@@ -106,17 +105,13 @@ namespace Demo
         sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
             Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
             -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
-
     }
 
     void ArenaShooterGameState::update(float timeSinceLast)
     {
         //TODO GameLoop here !!
 
-
-
 		// don't touch
-     
 
         //input
       /*  if (m_camera)
