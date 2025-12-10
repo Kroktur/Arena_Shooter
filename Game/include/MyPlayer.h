@@ -43,7 +43,6 @@ public:
 //	const float m_maxMana = 100.0f;
 private:
 	bool m_ZQSD[4];
-	Ogre::SceneNode* node;
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
 };
 

@@ -55,13 +55,13 @@ void MyPlayer::Init()
 	mnode.second->setPosition(0, 0, 0);
 	mnode.second->setScale(10, 10, 10);
 	mnode.second->attachObject(item.second);
-	node = mnode.second;
 	AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
 	auto animation = AddComponent<AnimationComponent<IGameObject>>();
 	animation->SetSkeleton(item.second, "Armature.skeleton");
 	animation->AddAnimation("my_animation");
 	animation->SetAnimation(0);
 	animation->GetCurrentAnimation()->setEnabled(true);
+	extractVertexPositions(item.second);
 }
 
 void MyPlayer::Exit()
@@ -95,15 +95,15 @@ void MyPlayer::update(float deltaTime)
 
   
     Ogre::Item* item = static_cast<Ogre::Item*>(obj);*/
+	auto item = GetComponent<MeshComponent<IGameObject>>()->GetItem();
+	static KT::Chrono<float> test;
+   auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
+	Animation->addTime(deltaTime);
 
-   //static KT::Chrono<float> test;
- /*  auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
-	Animation->addTime(deltaTime);*/
-
-   //if (test.GetElapsedTime().AsSeconds() > 5)
-   //{
-   //   // extractVertexPositions(item);
-   //}
+   if (test.GetElapsedTime().AsSeconds() > 5)
+   {
+       //extractVertexPositions(item);
+   }
 }
 void MyPlayer::input()
 {
@@ -141,9 +141,8 @@ void MyPlayer::moveTranslation(float deltaTime)
 		z = 10 * deltaTime;
 	if (m_ZQSD[3])
 		x = 10 * deltaTime;
-	//auto mesh = GetComponent<MeshComponent<IGameObject>>();
-	//mesh->GetNode()->translate(x, 0, z);
-	node->translate(x, 0, z);
+	auto mesh = GetComponent<MeshComponent<IGameObject>>();
+	mesh->GetNode()->translate(x, 0, z);
 }
 
 void MyPlayer::inputPressed()
