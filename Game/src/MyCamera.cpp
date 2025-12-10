@@ -18,23 +18,21 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
     // memset is the same as : std::fill(std::begin(m_ZSQD), std::end(m_ZSQD), false);
 	memset(m_ZQSD, 0, sizeof(m_ZQSD));               // 0: Z, 1: S, 2: Q, 3: D
 	memset(m_directionalCross, 0, sizeof(m_directionalCross)); // 0: Left, 1: Right, 2: Up, 3: Down
-<<<<<<< HEAD
 	//Camera setup
-    m_camera = m_graphicsSystem->getCamera();
+	// top down view
+    /*m_camera = m_graphicsSystem->getCamera();
     m_camera->setPosition(0, 10, 0);
 	m_camera->pitch(-Ogre::Degree(10));
     m_camera->setNearClipDistance(0.2f);
-    m_camera->setFarClipDistance(1000.0f);
-   /* m_camera->setAutoAspectRatio(true);*/
-=======
+    m_camera->setFarClipDistance(1000.0f);*/
+
+	// back of player view
     m_camera = m_graphicsSystem->getCamera();
     m_camera->setPosition(0, 30, 0);
     m_camera->pitch(-Ogre::Degree(90));
     m_camera->setNearClipDistance(0.2f);
     m_camera->setFarClipDistance(1000.0f);
  //   cameraNode->setPosition(0, 100, 0);
-
->>>>>>> origin/main
 }
 
 Ogre::Camera* MyCamera::getCamera() const
@@ -120,9 +118,6 @@ void MyCamera::update(const float& dt)
 
     m_camera->setPosition(newPos);
     m_camera->lookAt(playerPos);
-
-
-
 }
 
 bool MyCamera::keyPressed(const SDL_KeyboardEvent& arg)

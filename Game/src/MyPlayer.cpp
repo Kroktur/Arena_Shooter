@@ -22,12 +22,9 @@
 #include "OgreRoot.h"
 #include "Math/MyMath.h"
 #include "Math/Vector3.h"
-<<<<<<< HEAD
 #include "PlayerStates.h"
 
-=======
 #include <Animation/OgreSkeletonInstance.h>
->>>>>>> origin/main
 
 std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
 {
@@ -104,14 +101,14 @@ void MyPlayer::input()
 {
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::A))
 	{
-		auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+		/*auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
 		auto root = Ccrtp->GetRoot();
 		root->AsRoot()->ToDoAtBegin([&]
 		{
 				auto* cast = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
 				auto player = new MyPlayer2(cast,nullptr);
 				player->Init();
-		});
+		});*/
 	}
 
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::P))

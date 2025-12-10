@@ -51,11 +51,9 @@ namespace Demo
         void createCamera() override
         {
             mCamera = mSceneManager->createCamera("Main Camera");
-<<<<<<< HEAD
-=======
+
          /*   mCamera->setPosition(0, 30, 0);
             mCamera->lookAt(0, 0, 0);*/
->>>>>>> origin/main
         }
         void setupResources() override
         {

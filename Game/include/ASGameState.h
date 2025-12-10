@@ -16,18 +16,15 @@ namespace Demo
 	class ArenaShooterGameState : public TutorialGameState , public KT::ExcludeRootCRTP<ArenaShooterGameState,IGameObject,ArenaShooterGameState>
 	{
 		MyCamera* m_camera;
-<<<<<<< HEAD
 		Ogre::Item* m_pTtem;
 
 
 	private:
 		Ogre::SceneNode* mSceneNode;
 		Ogre::SceneNode* m_playerNode;
-=======
 		Ogre::SceneManager* m_manager;
 		std::vector<std::function<void()>> instantiate;
 		void ExecuteBegin();
->>>>>>> origin/main
 	public:
 	/*	void DetachItem(int nodeIndex, int itemIndex);
 
