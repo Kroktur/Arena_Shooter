@@ -90,13 +90,23 @@ void MyPlayer::update(float deltaTime)
 
 	auto item = GetComponent<MeshComponent<IGameObject>>()->GetItem();
 	static KT::Chrono<float> test;
-   auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
+    auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
 	Animation->addTime(deltaTime);
 
-   if (test.GetElapsedTime().AsSeconds() > 5)
-   {
+	// Update projectiles
+	for (int i = m_projectiles.size() - 1; i >= 0; --i)
+	{
+		if (!m_projectiles[i]->update(deltaTime))
+		{
+			m_projectiles[i]->destroy();
+			m_projectiles.erase(m_projectiles.begin() + i);
+		}
+	}
+
+    if (test.GetElapsedTime().AsSeconds() > 5)
+    {
        //extractVertexPositions(item);
-   }
+    }
 }
 
 void MyPlayer::input()
@@ -158,4 +168,44 @@ void MyPlayer::inputPressed()
 		m_ZQSD[2] = true;
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::D))
 		m_ZQSD[3] = true;
+}
+
+void MyPlayer::SetCamera(MyCamera* camera)
+{
+	m_camera = camera;
+}
+
+void MyPlayer::startDashForward()
+{
+	Ogre::Vector3 forward = m_camera->getCamera()->getDirection();
+	forward.y = 0;
+	forward.normalise();
+
+	m_velocity = forward * dashSpeed;
+}
+
+void MyPlayer::shootFireball()
+{
+	auto mesh = GetComponent<MeshComponent<IGameObject>>();
+	auto node = mesh->GetNode();
+	Ogre::Vector3 position = node->getPosition();
+	Ogre::Vector3 forward = m_camera->getCamera()->getDirection().normalisedCopy();
+	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+	auto root = Ccrtp->GetRoot();
+	auto manager = root->AsRoot()->GetSceneManager();
+	m_projectiles.push_back(std::make_unique<Fireball>(manager, position + forward * 4.0f, forward));
+}
+
+
+bool MyPlayer::isGrounded() const
+{
+	return m_isGrounded;
+}
+
+bool MyPlayer::isMoving() const
+{
+	return KT::Input::isPressed<KT::KEY>(KT::KEY::Z) ||
+		KT::Input::isPressed<KT::KEY>(KT::KEY::S) ||
+		KT::Input::isPressed<KT::KEY>(KT::KEY::Q) ||
+		KT::Input::isPressed<KT::KEY>(KT::KEY::D);
 }

@@ -4,6 +4,63 @@
 PlayerStates::PlayerStates(MyPlayer* entity) : KT::IState<MyPlayer>(entity)
 {}
 
+bool PlayerStates::isGoingForward()
+{
+	return KT::Input::isPressed<KT::KEY>(KT::KEY::Z);
+}
+
+bool PlayerStates::isGoingBackward()
+{
+    return KT::Input::isPressed<KT::KEY>(KT::KEY::S);
+}
+
+bool PlayerStates::isGoingLeft()
+{
+    return KT::Input::isPressed<KT::KEY>(KT::KEY::Q);
+}
+
+bool PlayerStates::isGoingRight()
+{
+    return KT::Input::isPressed<KT::KEY>(KT::KEY::D);
+}
+
+bool PlayerStates::isAttacking()
+{
+    return KT::Input::isPressed<KT::MOUSE>(KT::MOUSE::LHS);
+}
+
+bool PlayerStates::isJumping()
+{
+    return KT::Input::isPressed<KT::KEY>(KT::KEY::SPACE);
+}
+
+bool PlayerStates::isDashing()
+{
+    return KT::Input::isPressed<KT::KEY>(KT::KEY::LSHIFT);
+}
+
+void PlayerStates::CommonTransitions()
+{
+    if (isJumping())
+    {
+        SetNextState<JumpPlayerState>();
+        return;
+    }
+
+    if (isAttacking())
+    {
+        SetNextState<AttackPlayerState>();
+        return;
+    }
+
+    if (isDashing() && isGoingForward())
+    {
+        SetNextState<DashPlayerState>();
+        return;
+    }
+}
+
+
 //--------------------------------------
 //--- IdlePlayerState Implementation ---
 //--------------------------------------
@@ -25,44 +82,18 @@ void IdlePlayerState::OnExit()
 
 void IdlePlayerState::ProcessInput()
 {
-    // Jump
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::SPACE))
-    {
-        SetNextState<JumpPlayerState>();
-        return;
-    }
 
-    // Attack
-    if (KT::Input::isPressed<KT::MOUSE>(KT::MOUSE::LHS))
-    {
-        SetNextState<AttackPlayerState>();
-        return;
-    }
-
-    // Dash
-    bool anyMoveKey =
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Z) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Q) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::S) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::D);
-
-    if (anyMoveKey && KT::Input::isPressed<KT::KEY>(KT::KEY::LSHIFT))
-    {
-        SetNextState<DashPlayerState>();
-        return;
-    }
-
-    // Run
-    if (anyMoveKey)
-    {
-        SetNextState<RunPlayerState>();
-        return;
-    }
 }
 
 void IdlePlayerState::Update(const float& dt)
 {
-	// Update logic for idle state
+    CommonTransitions();
+
+    if (isGoingForward() || isGoingBackward() || isGoingLeft() || isGoingRight())
+    {
+        SetNextState<RunPlayerState>();
+        return;
+    }
 }
 
 void IdlePlayerState::Render(const float& alpha)
@@ -90,46 +121,19 @@ void JumpPlayerState::OnExit()
 
 void JumpPlayerState::ProcessInput()
 {
-    bool anyMoveKey =
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Z) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Q) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::S) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::D);
-
-    // go idle
-    if (!anyMoveKey)
-    {
-        SetNextState<IdlePlayerState>();
-        return;
-    }
-
-    // go jump
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::SPACE))
-    {
-        SetNextState<JumpPlayerState>();
-        return;
-    }
-
-    // attack
-    if (KT::Input::isPressed<KT::MOUSE>(KT::MOUSE::LHS))
-    {
-        SetNextState<AttackPlayerState>();
-        return;
-    }
-
-    // dash
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::LSHIFT))
-    {
-        SetNextState<DashPlayerState>();
-        return;
-    }
 }
 
 void JumpPlayerState::Update(const float& dt)
 {
 	// Update logic for jump state
 
-	/*SetNextState<IdlePlayerState>();*/
+    if (m_entity->isGrounded())
+    {
+        if (m_entity->isMoving())
+            SetNextState<RunPlayerState>();
+        else
+            SetNextState<IdlePlayerState>();
+    }
 }
 
 void JumpPlayerState::Render(const float& alpha)
@@ -148,6 +152,8 @@ DashPlayerState::DashPlayerState(MyPlayer* entity) : PlayerStates(entity)
 void DashPlayerState::OnEnter()
 {
 	// Logic to execute when entering dash state
+    m_timer = 0.15f;
+    m_entity->startDashForward();
 }
 
 void DashPlayerState::OnExit()
@@ -157,44 +163,19 @@ void DashPlayerState::OnExit()
 
 void DashPlayerState::ProcessInput()
 {
-    bool anyMoveKey =
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Z) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Q) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::S) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::D);
 
-    // go idle
-    if (!anyMoveKey)
-    {
-        SetNextState<IdlePlayerState>();
-        return;
-    }
-
-    // Run
-    if (anyMoveKey)
-    {
-        SetNextState<RunPlayerState>();
-        return;
-    }
-
-    // go jump
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::SPACE))
-    {
-        SetNextState<JumpPlayerState>();
-        return;
-    }
-
-    // attack
-    if (KT::Input::isPressed<KT::MOUSE>(KT::MOUSE::LHS))
-    {
-        SetNextState<AttackPlayerState>();
-        return;
-    }
 }
 
 void DashPlayerState::Update(const float& dt)
 {
-	// Update logic for dash state
+    m_timer -= dt;
+    if (m_timer <= 0)
+    {
+        if (m_entity->isMoving())
+            SetNextState<RunPlayerState>();
+        else
+            SetNextState<IdlePlayerState>();
+    }
 }
 
 void DashPlayerState::Render(const float& alpha)
@@ -213,6 +194,9 @@ AttackPlayerState::AttackPlayerState(MyPlayer* entity) : PlayerStates(entity)
 void AttackPlayerState::OnEnter()
 {
 	// Logic to execute when entering attack state
+    m_entity->shootFireball();
+    m_cooldown = 0.2f;
+
 }
 
 void AttackPlayerState::OnExit()
@@ -222,43 +206,18 @@ void AttackPlayerState::OnExit()
 
 void AttackPlayerState::ProcessInput()
 {
-    bool anyMoveKey =
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Z) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Q) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::S) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::D);
-
-    // go idle
-    if (!anyMoveKey)
-    {
-        SetNextState<IdlePlayerState>();
-        return;
-    }
-
-    // Run
-    if (anyMoveKey)
-    {
-        SetNextState<RunPlayerState>();
-        return;
-    }
-
-    // go jump
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::SPACE))
-    {
-        SetNextState<JumpPlayerState>();
-        return;
-    }
-
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::LSHIFT))
-    {
-        SetNextState<DashPlayerState>();
-        return;
-    }
 }
 
 void AttackPlayerState::Update(const float& dt)
 {
-	// Update logic for attack state
+    m_cooldown -= dt;
+    if (m_cooldown <= 0)
+    {
+        if (m_entity->isMoving())
+            SetNextState<RunPlayerState>();
+        else
+            SetNextState<IdlePlayerState>();
+    }
 }
 
 void AttackPlayerState::Render(const float& alpha)
@@ -286,44 +245,18 @@ void RunPlayerState::OnExit()
 
 void RunPlayerState::ProcessInput()
 {
-    bool anyMoveKey =
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Z) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::Q) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::S) ||
-        KT::Input::isPressed<KT::KEY>(KT::KEY::D);
-
-    // go idle
-    if (!anyMoveKey)
-    {
-        SetNextState<IdlePlayerState>();
-        return;
-    }
-
-    // go jump
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::SPACE))
-    {
-        SetNextState<JumpPlayerState>();
-        return;
-    }
-
-    // dash
-    if (KT::Input::isPressed<KT::KEY>(KT::KEY::LSHIFT))
-    {
-        SetNextState<DashPlayerState>();
-        return;
-    }
-
-    // attack
-    if (KT::Input::isPressed<KT::MOUSE>(KT::MOUSE::LHS))
-    {
-        SetNextState<AttackPlayerState>();
-        return;
-    }
+    
 }
 
 void RunPlayerState::Update(const float& dt)
 {
-	// Update logic for run state
+    CommonTransitions();
+
+    if (isGoingForward() || isGoingBackward() || isGoingLeft() || isGoingRight())
+    {
+        SetNextState<IdlePlayerState>();
+        return;
+    }
 }
 
 void RunPlayerState::Render(const float& alpha)

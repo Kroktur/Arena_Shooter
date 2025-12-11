@@ -11,6 +11,16 @@ public:
 	void ProcessInput() override = 0; // Process input for idle state
 	void Update(const float& dt) override = 0; // Update logic for idle state
 	void Render(const float& alpha) override = 0; // Render logic for idle state
+
+protected:
+	static bool isGoingForward();
+	static bool isGoingBackward();
+	static bool isGoingLeft();
+	static bool isGoingRight();
+	static bool isAttacking();
+	static bool isDashing();
+	static bool isJumping();
+	void CommonTransitions();
 };
 
 class IdlePlayerState : public PlayerStates
@@ -26,7 +36,7 @@ public:
 
 class JumpPlayerState : public PlayerStates
 {
-	public:
+public:
 	JumpPlayerState(MyPlayer* entity);
 	void OnEnter() override;
 	void OnExit() override;
@@ -37,29 +47,33 @@ class JumpPlayerState : public PlayerStates
 
 class DashPlayerState : public PlayerStates
 {
-	public:
+public:
 	DashPlayerState(MyPlayer* entity);
 	void OnEnter() override;
 	void OnExit() override;
 	void ProcessInput() override;
 	void Update(const float& dt) override;
 	void Render(const float& alpha) override;
+private:
+	float m_timer;
 };
 
 class AttackPlayerState : public PlayerStates
 {
-	public:
+public:
 	AttackPlayerState(MyPlayer* entity);
 	void OnEnter() override;
 	void OnExit() override;
 	void ProcessInput() override;
 	void Update(const float& dt) override;
 	void Render(const float& alpha) override;
+private:
+	float m_cooldown;
 };
 
 class RunPlayerState : public PlayerStates
 {
-	public:
+public:
 	RunPlayerState(MyPlayer* entity);
 	void OnEnter() override;
 	void OnExit() override;

@@ -2,6 +2,7 @@
 
 #include "Core/Input.h"
 #include "Math/MyMath.h"
+#include "Math/Vector3.h"
 constexpr float MIN_PITCH = -1.55f;
 constexpr float MAX_PITCH = 1.55f;
 
@@ -22,9 +23,10 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
 	// back of player view
     m_camera = m_graphicsSystem->getCamera();
     m_camera->setPosition(0, 10, 0);
-	m_camera->pitch(-Ogre::Degree(10));
+	/*m_camera->pitch(-Ogre::Degree(10));*/
     m_camera->setNearClipDistance(0.2f);
     m_camera->setFarClipDistance(1000.0f);
+    m_camera->lookAt(0, 10, 0);
 
 	// top down view
     /*m_camera = m_graphicsSystem->getCamera();
@@ -47,64 +49,6 @@ void MyCamera::setTarget(Ogre::SceneNode* target)
 
 void MyCamera::update(const float& dt)
 {
-	/*Ogre::Camera* camera = m_graphicsSystem->getCamera();
-    Ogre::Node* cameraNode = m_useSceneNode ? camera->getParentNode() : nullptr;*/
-  /*  if (m_cameraYaw != 0.0f || m_cameraPitch != 0.0f)
-    {
-	    if (m_useSceneNode)
-	    {
-            cameraNode->yaw(Ogre::Radian(m_cameraYaw), Ogre::Node::TS_WORLD);
-            cameraNode->pitch(Ogre::Radian(m_cameraPitch));
-	    }
-        else
-        {
-            camera->yaw(Ogre::Radian(m_cameraYaw));
-            camera->pitch(Ogre::Radian(m_cameraPitch));
-        }
-
-        m_cameraYaw = 0.0f;
-        m_cameraPitch = 0.0f;
-    }*/
-
-  //  static bool init = false;
-  //  if (!init)
-  //  {
-  //      //cameraNode->pitch(Ogre::Degree(90), Ogre::Node::TS_WORLD);
-  //      camera->pitch(-Ogre::Degree(90));
-		//init = true;
-  //  }
-
-	// --- Movement ---
-    /*int camMovementZ = m_directionalCross[2] - m_directionalCross[0];
-    int camMovementX = m_directionalCross[3] - m_directionalCross[1];
-    int slideUpDown  = m_directionalCross[0] - m_directionalCross[1];
-
-    float speed = m_cameraBaseSpeed;*/
-
-    /*if (camMovementX || slideUpDown || camMovementZ)
-    {
-        Ogre::Vector3 dir((float)camMovementX, (float)slideUpDown, (float)-camMovementZ);
-        dir.normalise();
-
-        float speed = m_cameraBaseSpeed;
-        if (m_speedModifier)
-            speed *= m_cameraSpeedBoost;
-
-        dir *= speed * dt;
-
-        if (m_useSceneNode)
-            cameraNode->translate(dir, Ogre::Node::TS_LOCAL);
-        else
-            camera->moveRelative(dir);
-    }*/
-
-    //Ogre::Vector3 dir((float)camMovementX, 0.0f, (float)-camMovementZ);
-
-    //dir.normalise();
-    //dir *= speed * dt;
-
-    //camera->move(dir); // TS_WORLD
-
     if (!m_target)
         return;
 
@@ -117,7 +61,6 @@ void MyCamera::update(const float& dt)
     Ogre::Vector3 newPos = current + (target - current) * smooth * dt;
 
     m_camera->setPosition(newPos);
-    /*m_camera->lookAt(playerPos);*/
 }
 
 bool MyCamera::keyPressed(const SDL_KeyboardEvent& arg)
@@ -181,4 +124,12 @@ void MyCamera::onMouseMoved(const SDL_Event& arg)
 
     //// Clamp pitch
     //m_cameraPitch = KT::Math::Clamp(m_cameraPitch, MIN_PITCH, MAX_PITCH);
+}
+
+Ogre::Vector3 MyCamera::getDirection() const
+{
+    Ogre::Vector3 dir = m_camera->getDirection();
+    dir.y = 0;
+    dir.normalise();
+    return dir;
 }

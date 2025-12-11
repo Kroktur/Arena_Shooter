@@ -16,6 +16,7 @@ public:
 
 	// --- getters ---
 	Ogre::Camera* getCamera() const;
+	Ogre::Vector3 getDirection() const;
 
 	// --- setters ---
 	void setTarget(Ogre::SceneNode* target);

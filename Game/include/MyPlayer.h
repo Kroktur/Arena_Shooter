@@ -5,6 +5,7 @@
 #include "Core/CompositeCrtp.h"
 #include "Core/Input.h"
 #include "Core/StateMachine.h"
+#include "Spells.h"
 
 class MyPlayer : public IGameObject, public KT::CompositeCRTP<MyPlayer,IGameObject,Demo::ArenaShooterGameState>
 {
@@ -21,7 +22,8 @@ public:
 //	float getMana() const;
 //	float getMaxHealth() const;
 //
-//	// --- setters ---
+	// --- setters ---
+	void SetCamera(MyCamera* camera);
 //	void setHealth(float health);
 //	void setRunningSpeed(float speed);
 //	void setMana(float mana);
@@ -30,10 +32,14 @@ public:
 //	void takeDamage(float damage);
 //	void recoverMana(float amount);
 //	void consumeMana(float amount);
+	void startDashForward();
+	void shootFireball();
+	bool isGrounded() const;
 
 	// --- movement ---
 	void moveTranslation(float deltaTime);
 	void inputPressed();
+	bool isMoving() const;
 //private:
 //	float m_health;
 //	float m_mana;
@@ -44,6 +50,11 @@ public:
 private:
 	bool m_ZQSD[4];
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
+	Ogre::Vector3 m_velocity = Ogre::Vector3::ZERO;
+	float dashSpeed = 50.0f;
+	bool m_isGrounded = true;
+	MyCamera* m_camera = nullptr;
+	std::vector<std::unique_ptr<Fireball>> m_projectiles;
 };
 
 

@@ -37,7 +37,6 @@ INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine
         __debugbreak();
         return EXIT_FAILURE;
     }
-
 }
 
 namespace Demo
