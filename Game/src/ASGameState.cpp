@@ -66,12 +66,17 @@ namespace Demo
 
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
-		new MyPlayer(this);
+		MyPlayer* player = new MyPlayer(this);
 
         ExecuteAction([&](IGameObject* go)
             {
                 go->Init();
             });
+
+        auto mesh = player->GetComponent<MeshComponent<IGameObject>>();
+        auto playerNode = mesh->GetNode();
+
+        m_camera->setTarget(playerNode);
 
         Ogre::Light* light = m_manager->createLight();
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
@@ -97,9 +102,12 @@ namespace Demo
                 go->input();
             });
 
+        /*TutorialGameState::update(timeSinceLast);*/
+
         //update
         if (m_camera)
             m_camera->update(timeSinceLast);
+
         ExecuteAction([&](IGameObject* go)
             {
                 go->update(timeSinceLast);

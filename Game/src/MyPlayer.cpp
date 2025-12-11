@@ -56,6 +56,7 @@ void MyPlayer::Init()
 	auto mnode = NodePull::Type::PullValidObject(NodePull::create, manager);
 	mnode.second->setPosition(0, 0, 0);
 	mnode.second->setScale(10, 10, 10);
+	mnode.second->yaw(Ogre::Degree(180));
 	mnode.second->attachObject(item.second);
 	AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
 	auto animation = AddComponent<AnimationComponent<IGameObject>>();
@@ -97,6 +98,7 @@ void MyPlayer::update(float deltaTime)
        //extractVertexPositions(item);
    }
 }
+
 void MyPlayer::input()
 {
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::A))

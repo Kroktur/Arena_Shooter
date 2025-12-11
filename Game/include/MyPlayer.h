@@ -15,7 +15,7 @@ public:
 	void Exit() override;
 	void update(float deltaTime) override;
 	void input() override;
-//	// --- getters ---
+	// --- getters ---
 //	float getHealth() const;
 //	float getRunningSpeed() const;
 //	float getMana() const;
@@ -47,7 +47,9 @@ private:
 };
 
 
-inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) : KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),m_stateMachine(nullptr)
+inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) :
+		KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),
+		m_stateMachine(nullptr)
 {
 
 }

@@ -23,8 +23,6 @@ namespace ItemPull
             return manager->createItem(
                 name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
                 Ogre::SCENE_DYNAMIC);
-
-
         };
 
     static auto reset = [](Ogre::Item* node) ->void

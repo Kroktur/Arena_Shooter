@@ -10,6 +10,7 @@ PlayerStates::PlayerStates(MyPlayer* entity) : KT::IState<MyPlayer>(entity)
 
 IdlePlayerState::IdlePlayerState(MyPlayer* entity) : PlayerStates(entity)
 {
+    /*m_entity->GetComponent<MeshComponent<IGameObject>>()->GetNode();*/
 }
 
 void IdlePlayerState::OnEnter()
