@@ -47,16 +47,23 @@ public:
 //	float m_shootCadence;
 //	const float m_maxHealth = 100.0f;
 //	const float m_maxMana = 100.0f;
+
 private:
 	bool m_ZQSD[4];
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
 	Ogre::Vector3 m_velocity = Ogre::Vector3::ZERO;
-	float dashSpeed = 50.0f;
-	bool m_isGrounded = true;
+	float m_dashSpeed = 50.0f;
 	MyCamera* m_camera = nullptr;
 	std::vector<std::unique_ptr<Fireball>> m_projectiles;
+public:
+	float m_verticalVelocity = 0.0f;
+	float m_jumpForce = 20.0f;
+	float m_gravity = -30.0f;
+	bool m_isGrounded = true;
+	float m_walkSpeed = 12.0f;
+	float m_runSpeed = 24.0f;
+	float m_currentSpeed = 8.0f;
 };
-
 
 inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) :
 		KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),

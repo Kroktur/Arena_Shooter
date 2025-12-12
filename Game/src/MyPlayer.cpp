@@ -93,6 +93,9 @@ void MyPlayer::update(float deltaTime)
     auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
 	Animation->addTime(deltaTime);
 
+	auto node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
+	node->setOrientation(m_camera->getCamera()->getOrientation());
+
 	// Update projectiles
 	for (int i = m_projectiles.size() - 1; i >= 0; --i)
 	{
@@ -102,6 +105,24 @@ void MyPlayer::update(float deltaTime)
 			m_projectiles.erase(m_projectiles.begin() + i);
 		}
 	}
+
+	if (!m_isGrounded)
+	{
+		m_verticalVelocity += m_gravity * deltaTime;
+	}
+
+	Ogre::Vector3 pos = node->getPosition();
+	pos.y += m_verticalVelocity * deltaTime;
+
+	if (pos.y <= 0.0f)
+	{
+		pos.y = 0.0f;
+		m_verticalVelocity = 0.0f;
+		m_isGrounded = true;
+	}
+
+	node->setPosition(pos);
+
 
     if (test.GetElapsedTime().AsSeconds() > 5)
     {
@@ -140,18 +161,23 @@ void MyPlayer::input()
 
 void MyPlayer::moveTranslation(float deltaTime)
 {
-	float x = 0;
-	float z = 0;
-	if (m_ZQSD[0])
-		z = -10 * deltaTime;
-	if (m_ZQSD[1])
-		x = -10 * deltaTime;
-	if (m_ZQSD[2])
-		z = 10 * deltaTime;
-	if (m_ZQSD[3])
-		x = 10 * deltaTime;
-	auto mesh = GetComponent<MeshComponent<IGameObject>>();
-	mesh->GetNode()->translate(x, 0, z);
+	Ogre::Vector3 move = Ogre::Vector3::ZERO;
+
+	if (KT::Input::isPressed<KT::KEY>(KT::KEY::Z))
+		move += m_camera->getCamera()->getDirection();
+	if (KT::Input::isPressed<KT::KEY>(KT::KEY::S))
+		move -= m_camera->getCamera()->getDirection();
+	if (KT::Input::isPressed<KT::KEY>(KT::KEY::Q))
+		move -= m_camera->getCamera()->getRight();
+	if (KT::Input::isPressed<KT::KEY>(KT::KEY::D))
+		move += m_camera->getCamera()->getRight();
+
+	move.y = 0;
+	if (!move.isZeroLength())
+		move.normalise();
+
+	auto node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
+	node->translate(move * m_currentSpeed * deltaTime, Ogre::Node::TS_WORLD);
 }
 
 void MyPlayer::inputPressed()
@@ -181,7 +207,7 @@ void MyPlayer::startDashForward()
 	forward.y = 0;
 	forward.normalise();
 
-	m_velocity = forward * dashSpeed;
+	m_velocity = forward * m_dashSpeed;
 }
 
 void MyPlayer::shootFireball()
@@ -193,7 +219,7 @@ void MyPlayer::shootFireball()
 	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
 	auto root = Ccrtp->GetRoot();
 	auto manager = root->AsRoot()->GetSceneManager();
-	m_projectiles.push_back(std::make_unique<Fireball>(manager, position + forward * 4.0f, forward));
+	m_projectiles.push_back(std::make_unique<Fireball>(manager, position + forward * 2.0f, forward));
 }
 
 

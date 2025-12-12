@@ -20,6 +20,7 @@ protected:
 	static bool isAttacking();
 	static bool isDashing();
 	static bool isJumping();
+	static bool isRunning();
 	void CommonTransitions();
 };
 
@@ -69,6 +70,17 @@ public:
 	void Render(const float& alpha) override;
 private:
 	float m_cooldown;
+};
+
+class WalkPlayerState : public PlayerStates
+{
+public:
+	WalkPlayerState(MyPlayer* entity);
+	void OnEnter() override;
+	void OnExit() override;
+	void ProcessInput() override;
+	void Update(const float& dt) override;
+	void Render(const float& alpha) override;
 };
 
 class RunPlayerState : public PlayerStates

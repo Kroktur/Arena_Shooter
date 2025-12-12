@@ -42,7 +42,7 @@ namespace Demo
 		void destroyScene() override;
 		void deinitialize() override;
 		void ToDoAtBegin(std::function<void()> fn);
-	
+		void mouseMoved(const SDL_Event& evt);
 	};
 }
 #endif

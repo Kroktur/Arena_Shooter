@@ -12,6 +12,7 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
         m_speedModifier(false),
         m_cameraYaw(0),
         m_cameraPitch(0),
+		m_sensitivity(0.002f),
         m_cameraBaseSpeed(50),
         m_cameraSpeedBoost(5),
 		m_graphicsSystem(graphicsSystem)
@@ -26,15 +27,7 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
 	/*m_camera->pitch(-Ogre::Degree(10));*/
     m_camera->setNearClipDistance(0.2f);
     m_camera->setFarClipDistance(1000.0f);
-    m_camera->lookAt(0, 10, 0);
-
-	// top down view
-    /*m_camera = m_graphicsSystem->getCamera();
-    m_camera->setPosition(0, 30, 0);
-    m_camera->pitch(-Ogre::Degree(90));
-    m_camera->setNearClipDistance(0.2f);
-    m_camera->setFarClipDistance(1000.0f);*/
- //   cameraNode->setPosition(0, 100, 0);
+    /*m_camera->lookAt(0, 10, 0);*/
 }
 
 Ogre::Camera* MyCamera::getCamera() const
@@ -51,16 +44,10 @@ void MyCamera::update(const float& dt)
 {
     if (!m_target)
         return;
-
     Ogre::Vector3 playerPos = m_target->getPosition();
-    Ogre::Vector3 offset(0, 7.5, 0);
-    float smooth = 5.0f;
-    Ogre::Vector3 current = m_camera->getPosition();
-    Ogre::Vector3 target = playerPos + offset;
+    Ogre::Vector3 offset(0, 7.5f, 0);
 
-    Ogre::Vector3 newPos = current + (target - current) * smooth * dt;
-
-    m_camera->setPosition(newPos);
+    m_camera->setPosition(playerPos + offset);
 }
 
 bool MyCamera::keyPressed(const SDL_KeyboardEvent& arg)
@@ -117,13 +104,15 @@ void MyCamera::Input()
 
 void MyCamera::onMouseMoved(const SDL_Event& arg)
 {
-    //constexpr float sensitivity = 0.15f;
+    m_cameraYaw -= arg.motion.xrel * m_sensitivity;
+    m_cameraPitch -= arg.motion.yrel * m_sensitivity;
 
-    //m_cameraYaw += -arg.motion.xrel * sensitivity * 0.002f;
-    //m_cameraPitch += -arg.motion.yrel * sensitivity * 0.002f;
+    m_cameraPitch = std::max(MIN_PITCH, std::min(MAX_PITCH, m_cameraPitch));
 
-    //// Clamp pitch
-    //m_cameraPitch = KT::Math::Clamp(m_cameraPitch, MIN_PITCH, MAX_PITCH);
+    m_camera->setOrientation(
+        Ogre::Quaternion(Ogre::Radian(m_cameraYaw), Ogre::Vector3::UNIT_Y) *
+        Ogre::Quaternion(Ogre::Radian(m_cameraPitch), Ogre::Vector3::UNIT_X)
+    );
 }
 
 Ogre::Vector3 MyCamera::getDirection() const

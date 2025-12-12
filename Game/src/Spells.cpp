@@ -4,7 +4,7 @@
 
 
 Fireball::Fireball(Ogre::SceneManager* mgr, const Ogre::Vector3& pos, const Ogre::Vector3& dir)
-	: m_manager(mgr), m_direction(dir.normalisedCopy()), m_speed(100.0f), m_lifetime(5.0f)
+	: m_manager(mgr), m_direction(dir.normalisedCopy()), m_speed(300.0f), m_lifetime(2.0f)
 {
 	m_node = m_manager->getRootSceneNode()->createChildSceneNode();
 	m_node->setPosition(pos);

@@ -119,14 +119,9 @@ namespace Demo
             // Show FPS
             Ogre::String finalText;
             generateDebugText(timeSinceLast, finalText);
-
-
         }
 
         static KT::Chrono<float> destroy;
-
-
-
 
         std::vector<IComponent*> toDelet;
         //logic here
@@ -148,6 +143,12 @@ namespace Demo
         }
         toDelet.clear();
 
+    }
+
+    void ArenaShooterGameState::mouseMoved(const SDL_Event& evt)
+    {
+        if (m_camera)
+            m_camera->onMouseMoved(evt);
     }
 
     void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)

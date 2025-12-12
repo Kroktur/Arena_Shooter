@@ -29,6 +29,11 @@ bool PlayerStates::isAttacking()
     return KT::Input::isPressed<KT::MOUSE>(KT::MOUSE::LHS);
 }
 
+bool PlayerStates::isRunning()
+{
+    return KT::Input::isPressed<KT::KEY>(KT::KEY::LCTRL);
+}
+
 bool PlayerStates::isJumping()
 {
     return KT::Input::isPressed<KT::KEY>(KT::KEY::SPACE);
@@ -54,10 +59,7 @@ void PlayerStates::CommonTransitions()
     }
 
     if (isDashing() && isGoingForward())
-    {
         SetNextState<DashPlayerState>();
-        return;
-    }
 }
 
 
@@ -89,10 +91,14 @@ void IdlePlayerState::Update(const float& dt)
 {
     CommonTransitions();
 
-    if (isGoingForward() || isGoingBackward() || isGoingLeft() || isGoingRight())
+    bool moving = isGoingForward() || isGoingBackward() || isGoingLeft() || isGoingRight();
+
+    if (moving)
     {
-        SetNextState<RunPlayerState>();
-        return;
+        if (isRunning())
+            SetNextState<RunPlayerState>();
+        else
+            SetNextState<WalkPlayerState>();
     }
 }
 
@@ -112,6 +118,8 @@ JumpPlayerState::JumpPlayerState(MyPlayer* entity) : PlayerStates(entity)
 void JumpPlayerState::OnEnter()
 {
 	// Logic to execute when entering jump state
+    m_entity->m_isGrounded = false;
+    m_entity->m_verticalVelocity = m_entity->m_jumpForce;
 }
 
 void JumpPlayerState::OnExit()
@@ -126,11 +134,15 @@ void JumpPlayerState::ProcessInput()
 void JumpPlayerState::Update(const float& dt)
 {
 	// Update logic for jump state
-
     if (m_entity->isGrounded())
     {
         if (m_entity->isMoving())
-            SetNextState<RunPlayerState>();
+        {
+            if (isRunning())
+                SetNextState<RunPlayerState>();
+            else
+                SetNextState<WalkPlayerState>();
+        }
         else
             SetNextState<IdlePlayerState>();
     }
@@ -226,6 +238,51 @@ void AttackPlayerState::Render(const float& alpha)
 }
 
 //--------------------------------------
+//--- WalkPlayerState Implementation ---
+//--------------------------------------
+
+WalkPlayerState::WalkPlayerState(MyPlayer* entity) : PlayerStates(entity)
+{
+}
+
+void WalkPlayerState::OnEnter()
+{
+    // Logic to execute when entering run state
+    m_entity->m_currentSpeed = m_entity->m_walkSpeed;
+}
+
+void WalkPlayerState::OnExit()
+{
+    // Logic to execute when exiting run state
+}
+
+void WalkPlayerState::ProcessInput()
+{
+
+}
+
+void WalkPlayerState::Update(const float& dt)
+{
+    CommonTransitions();
+
+    bool moving = isGoingForward() || isGoingBackward() || isGoingLeft() || isGoingRight();
+
+    if (!moving)
+    {
+        SetNextState<IdlePlayerState>();
+        return;
+    }
+
+    if (isRunning())
+        SetNextState<RunPlayerState>();
+}
+
+void WalkPlayerState::Render(const float& alpha)
+{
+    // Render logic for run state
+}
+
+//--------------------------------------
 //--- RunPlayerState Implementation ---
 //--------------------------------------
 
@@ -236,6 +293,7 @@ RunPlayerState::RunPlayerState(MyPlayer* entity) : PlayerStates(entity)
 void RunPlayerState::OnEnter()
 {
 	// Logic to execute when entering run state
+    m_entity->m_currentSpeed = m_entity->m_runSpeed;
 }
 
 void RunPlayerState::OnExit()
@@ -252,11 +310,17 @@ void RunPlayerState::Update(const float& dt)
 {
     CommonTransitions();
 
-    if (isGoingForward() || isGoingBackward() || isGoingLeft() || isGoingRight())
+    bool moving = isGoingForward() || isGoingBackward() || isGoingLeft() || isGoingRight();
+
+    if (!moving)
     {
         SetNextState<IdlePlayerState>();
         return;
     }
+
+    if (!isRunning())
+        SetNextState<WalkPlayerState>();
+
 }
 
 void RunPlayerState::Render(const float& alpha)

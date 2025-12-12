@@ -1,6 +1,11 @@
 #pragma once
 #include "OgreSceneManager.h"
 
+class SpellsStates
+{
+	
+};
+
 class Fireball
 {
 public:

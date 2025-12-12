@@ -37,12 +37,13 @@ private:
 	// FPS camera control
 	float m_cameraYaw;
 	float m_cameraPitch;
+	float m_sensitivity;
 
 	// --- booleans ---
-	bool m_useSceneNode;
-	bool m_speedModifier;
 	bool m_ZQSD[4];
 	bool m_directionalCross[4];
+	bool m_speedModifier;
+	bool m_useSceneNode;
 
 	// need our own graphics system pointer - TDL
 	Demo::GraphicsSystem* m_graphicsSystem;
