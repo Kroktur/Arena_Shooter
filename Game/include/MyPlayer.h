@@ -17,11 +17,12 @@ public:
 	void update(float deltaTime) override;
 	void input() override;
 	// --- getters ---
+	MyCamera* getCamera();
 //	float getHealth() const;
 //	float getRunningSpeed() const;
 //	float getMana() const;
 //	float getMaxHealth() const;
-//
+
 	// --- setters ---
 	void SetCamera(MyCamera* camera);
 //	void setHealth(float health);
@@ -56,13 +57,15 @@ private:
 	MyCamera* m_camera = nullptr;
 	std::vector<std::unique_ptr<Fireball>> m_projectiles;
 public:
+	// movement variables
 	float m_verticalVelocity = 0.0f;
 	float m_jumpForce = 20.0f;
-	float m_gravity = -30.0f;
-	bool m_isGrounded = true;
-	float m_walkSpeed = 12.0f;
-	float m_runSpeed = 24.0f;
+	float m_gravity = -45.0f;
+	bool  m_isGrounded = true;
+	float m_walkSpeed = 15.0f;
+	float m_runSpeed = 35.0f;
 	float m_currentSpeed = 8.0f;
+	float m_dashFriction = 80.0f;
 };
 
 inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) :

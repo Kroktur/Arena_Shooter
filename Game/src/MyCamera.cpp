@@ -27,6 +27,7 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
 	/*m_camera->pitch(-Ogre::Degree(10));*/
     m_camera->setNearClipDistance(0.2f);
     m_camera->setFarClipDistance(1000.0f);
+    m_camera->setFOVy(Ogre::Degree(90));
     /*m_camera->lookAt(0, 10, 0);*/
 }
 
@@ -121,4 +122,9 @@ Ogre::Vector3 MyCamera::getDirection() const
     dir.y = 0;
     dir.normalise();
     return dir;
+}
+
+void MyCamera::setFov(float degrees) const
+{
+    m_camera->setFOVy(Ogre::Degree(degrees));
 }

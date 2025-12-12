@@ -20,6 +20,7 @@ public:
 
 	// --- setters ---
 	void setTarget(Ogre::SceneNode* target);
+	void setFov(float degrees) const;
 
 	// --- input ---
 	void onMouseMoved(const SDL_Event& arg);

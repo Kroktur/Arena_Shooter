@@ -59,12 +59,12 @@ void MyPlayer::Init()
 	mnode.second->yaw(Ogre::Degree(180));
 	mnode.second->attachObject(item.second);
 	AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
-	auto animation = AddComponent<AnimationComponent<IGameObject>>();
+	/*auto animation = AddComponent<AnimationComponent<IGameObject>>();
 	animation->SetSkeleton(item.second, "Armature.skeleton");
 	animation->AddAnimation("my_animation");
 	animation->SetAnimation(0);
 	animation->GetCurrentAnimation()->setEnabled(true);
-	extractVertexPositions(item.second);
+	extractVertexPositions(item.second);*/
 }
 
 void MyPlayer::Exit()
@@ -90,8 +90,8 @@ void MyPlayer::update(float deltaTime)
 
 	auto item = GetComponent<MeshComponent<IGameObject>>()->GetItem();
 	static KT::Chrono<float> test;
-    auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
-	Animation->addTime(deltaTime);
+   /* auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
+	Animation->addTime(deltaTime);*/
 
 	auto node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
 	node->setOrientation(m_camera->getCamera()->getOrientation());
@@ -106,10 +106,25 @@ void MyPlayer::update(float deltaTime)
 		}
 	}
 
-	if (!m_isGrounded)
+	// Dashing movement
+	if (!m_velocity.isZeroLength())
 	{
-		m_verticalVelocity += m_gravity * deltaTime;
+		auto node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
+
+		node->translate(m_velocity * deltaTime, Ogre::Node::TS_WORLD);
+
+		float speed = m_velocity.length();
+		speed -= m_dashFriction * deltaTime;
+
+		if (speed <= 0.0f)
+			m_velocity = Ogre::Vector3::ZERO;
+		else
+			m_velocity = m_velocity.normalisedCopy() * speed;
 	}
+
+	// Gravity and jumping
+	if (!m_isGrounded)
+		m_verticalVelocity += m_gravity * deltaTime;
 
 	Ogre::Vector3 pos = node->getPosition();
 	pos.y += m_verticalVelocity * deltaTime;
@@ -122,7 +137,6 @@ void MyPlayer::update(float deltaTime)
 	}
 
 	node->setPosition(pos);
-
 
     if (test.GetElapsedTime().AsSeconds() > 5)
     {
@@ -234,4 +248,9 @@ bool MyPlayer::isMoving() const
 		KT::Input::isPressed<KT::KEY>(KT::KEY::S) ||
 		KT::Input::isPressed<KT::KEY>(KT::KEY::Q) ||
 		KT::Input::isPressed<KT::KEY>(KT::KEY::D);
+}
+
+MyCamera* MyPlayer::getCamera()
+{
+	return m_camera;
 }

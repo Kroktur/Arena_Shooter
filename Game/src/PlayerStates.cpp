@@ -1,5 +1,7 @@
 #include "PlayerStates.h"
 #include "Core/Input.h"
+#include "MyPlayer.h"
+#include "MyCamera.h"
 
 PlayerStates::PlayerStates(MyPlayer* entity) : KT::IState<MyPlayer>(entity)
 {}
@@ -164,7 +166,7 @@ DashPlayerState::DashPlayerState(MyPlayer* entity) : PlayerStates(entity)
 void DashPlayerState::OnEnter()
 {
 	// Logic to execute when entering dash state
-    m_timer = 0.15f;
+    m_timer = 2.0f;
     m_entity->startDashForward();
 }
 
@@ -208,7 +210,6 @@ void AttackPlayerState::OnEnter()
 	// Logic to execute when entering attack state
     m_entity->shootFireball();
     m_cooldown = 0.2f;
-
 }
 
 void AttackPlayerState::OnExit()
@@ -249,6 +250,7 @@ void WalkPlayerState::OnEnter()
 {
     // Logic to execute when entering run state
     m_entity->m_currentSpeed = m_entity->m_walkSpeed;
+    /*m_entity->getCamera()->setFov(100.0f);*/
 }
 
 void WalkPlayerState::OnExit()
@@ -294,6 +296,7 @@ void RunPlayerState::OnEnter()
 {
 	// Logic to execute when entering run state
     m_entity->m_currentSpeed = m_entity->m_runSpeed;
+    /*m_entity->getCamera()->setFov(110.0f);*/
 }
 
 void RunPlayerState::OnExit()
