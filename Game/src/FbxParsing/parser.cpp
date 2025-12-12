@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <vector>
 #include <iostream>
+#include <filesystem>
 #include "ofbx.h"
 #include "fbxLoader.h"
 #include "OgreItem.h"
@@ -8,13 +9,27 @@
 #include "GraphicsSystem.h"
 #include "OgreManualObject2.h"
 
-std::vector<const ofbx::Mesh*> parser() 
+std::vector<char*> readFolder()
 {
-	const char* fbxFile = "../../tree.fbx";
-    FILE* f = fopen(fbxFile, "rb");
+	std::vector<char*> files;
+	const std::string base = "../../FBXFile/";
+
+	for (const auto& entry : std::filesystem::directory_iterator(base)) {
+		if (!entry.is_regular_file()) 
+			continue;
+		std::string full = entry.path().string(); // chemin complet
+		char* copy = strdup(full.c_str());
+		files.push_back(copy);
+	}
+	return files;
+}
+
+std::vector<const ofbx::Mesh*> parser(char *file) 
+{
+    FILE* f = fopen(file, "rb");
 
     if (!f) {
-        std::cerr << "Failed to open FBX: " << fbxFile << "\n";
+        std::cerr << "Failed to open FBX: " << file << "\n";
     }
     fseek(f, 0, SEEK_END);
     size_t size = ftell(f);

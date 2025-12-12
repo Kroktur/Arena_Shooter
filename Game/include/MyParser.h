@@ -9,6 +9,7 @@ struct vect {
 	double z;
 };
 
-std::vector<const ofbx::Mesh*> parser();
+std::vector<const ofbx::Mesh*> parser(char *file);
+std::vector<char*> readFolder();
 
 #endif 
