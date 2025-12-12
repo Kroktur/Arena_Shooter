@@ -13,6 +13,7 @@
 #include "MainEntryPointHelper.h"
 #include "System/MainEntryPoints.h"
 #include "shlobj.h"
+#include "MyParser.h"
 
 
 
@@ -37,7 +38,7 @@ INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine
         __debugbreak();
         return EXIT_FAILURE;
     }
-
+    return 0;
 }
 
 namespace Demo
@@ -48,6 +49,7 @@ namespace Demo
         {
             return GraphicsSystem::setupCompositor();
         }
+
         void createCamera() override
         {
             mCamera = mSceneManager->createCamera("Main Camera");

@@ -19,6 +19,9 @@
 #include "OgreHlmsPbsDatablock.h"
 #include "OgreHlmsSamplerblock.h"
 #include "Tools/Chrono.h"
+#include "ofbx.h"
+#include "fbxLoader.h"
+#include "MyParser.h"
 
 namespace Demo
 {
@@ -47,15 +50,26 @@ namespace Demo
       
         // INIT ALL PULL 
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
-
       
         auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
-
     
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+        //GameState::createScene01();
+        std::vector<const ofbx::Mesh*> mesh = parser();
+        for (int i = 0; i < mesh.size(); ++i) {
+            const ofbx::Mesh* meshes = mesh.back();
+            auto item = Demo::createItemFromFBX(m_manager, meshes, mesh.size());
+            if (item) {
+                Ogre::SceneNode* node = m_manager->getRootSceneNode(Ogre::SCENE_DYNAMIC)->createChildSceneNode();
 
-       
-
+                ofbx::DMatrix global = meshes->getGlobalTransform();
+                Ogre::Vector3 position = node->getPosition();
+                Ogre::Vector3 scale = node->getScale();
+                node->setPosition(position);
+                node->setScale(scale);
+                node->attachObject(item);
+            }
+        }
         node3.second->setPosition(0, -10, 0);
         node3.second->setScale(100, 1, 100);
 
