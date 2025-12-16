@@ -23,6 +23,9 @@
 #include "Math/MyMath.h"
 #include "Math/Vector3.h"
 #include "PlayerStates.h"
+#include "NodePull.h"
+#include "ItemPull.h"
+#include <Animation/OgreBone.h>
 
 #include <Animation/OgreSkeletonInstance.h>
 
@@ -52,13 +55,20 @@ void MyPlayer::Init()
 	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
 	auto root = Ccrtp->GetRoot();
 	auto manager = root->AsRoot()->GetSceneManager();
-	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, manager, "Plane.mesh");
+	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "HandPlane.mesh"); }, manager, "HandPlane.mesh");
 	auto mnode = NodePull::Type::PullValidObject(NodePull::create, manager);
-	mnode.second->setPosition(0, 0, 0);
-	mnode.second->setScale(10, 10, 10);
+	mnode.second->setPosition(0, 10, 0);
+	mnode.second->setScale(1, 1, 1);
 	mnode.second->yaw(Ogre::Degree(180));
 	mnode.second->attachObject(item.second);
-	AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
+	auto mesh = AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
+	
+	/*auto m_skeletonInstance = item.second->getSkeletonInstance();
+	m_skeletonInstance->addAnimationsFromSkeleton("HandArmature.skeleton", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+	m_skeletonInstance->setParentNode(mnode.second);
+	m_fireBone = m_skeletonInstance->getBone("forearm.001.R");*/
+
+
 	/*auto animation = AddComponent<AnimationComponent<IGameObject>>();
 	animation->SetSkeleton(item.second, "Armature.skeleton");
 	animation->AddAnimation("my_animation");
@@ -162,7 +172,7 @@ void MyPlayer::input()
 	{
 		GetComponent<LivingComponent<IGameObject>>()->EnableDeath();
 	}
-	std::cout << this->GetChild().size() << " \n";
+	/*std::cout << this->GetChild().size() << " \n";*/
 
 
 
@@ -228,12 +238,50 @@ void MyPlayer::shootFireball()
 {
 	auto mesh = GetComponent<MeshComponent<IGameObject>>();
 	auto node = mesh->GetNode();
+
 	Ogre::Vector3 position = node->getPosition();
 	Ogre::Vector3 forward = m_camera->getCamera()->getDirection().normalisedCopy();
+	Ogre::Vector3 right = m_camera->getCamera()->getRight().normalisedCopy();
+	Ogre::Vector3 up = m_camera->getCamera()->getUp().normalisedCopy();
+
+	Ogre::Vector3 offset = forward * 6.0f + right * 2.8f + up * 2.3f;
+
+	Ogre::Vector3 firePos = position + offset;
 	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
 	auto root = Ccrtp->GetRoot();
 	auto manager = root->AsRoot()->GetSceneManager();
-	m_projectiles.push_back(std::make_unique<Fireball>(manager, position + forward * 2.0f, forward));
+	m_projectiles.push_back(std::make_unique<Fireball>(manager, firePos, forward));
+
+	/*auto mesh = GetComponent<MeshComponent<IGameObject>>();
+	auto item = mesh->GetItem();
+	auto skeleton = item->getSkeletonInstance();
+
+	if (!skeleton || !m_fireBone)
+		return;
+
+	const Ogre::SimpleMatrixAf4x3& packedMat = m_fireBone->_getFullTransform();
+
+	Ogre::Matrix4 mat;
+	packedMat.store4x3(&mat);
+
+	Ogre::Vector3 firePos(
+		mat[0][3],
+		mat[1][3],
+		mat[2][3]);
+
+	Ogre::Matrix3 rot3x3;
+	mat.extract3x3Matrix(rot3x3);
+
+	Ogre::Quaternion fireRot(rot3x3);
+
+	Ogre::Vector3 forward = fireRot * Ogre::Vector3::NEGATIVE_UNIT_Z;
+	forward.normalise();
+
+	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
+	auto root = Ccrtp->GetRoot();
+	auto manager = root->AsRoot()->GetSceneManager();
+
+	m_projectiles.push_back(std::make_unique<Fireball>(manager, firePos, forward));*/
 }
 
 
