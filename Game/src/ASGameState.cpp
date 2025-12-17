@@ -4,6 +4,7 @@
 #include <OgreHlmsPbs.h>
 #include <OgreSceneManager.h>
 
+#include "Fox.h"
 #include "GraphicsSystem.h"
 #include "OgreItem.h"
 #include "MyCamera.h"
@@ -18,6 +19,7 @@
 
 #include "OgreHlmsPbsDatablock.h"
 #include "OgreHlmsSamplerblock.h"
+#include "PhysicsSolver.h"
 #include "Tools/Chrono.h"
 
 namespace Demo
@@ -50,21 +52,25 @@ namespace Demo
 
       
         auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
+    //   auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
 
     
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
-
+      auto node1 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
        
-
+       
         node3.second->setPosition(0, -10, 0);
         node3.second->setScale(100, 1, 100);
-
         item3.second->setDatablock("Marble");
-        node3.second->attachObject(item3.second);
+		node3.second->attachObject(item3.second);
+        //node1.second->setPosition(0, 0, 0);
+        node1.second->setScale(1, 1, 1);
+		//node1.second->attachObject(item1.second);
 
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
 		new MyPlayer(this);
+		new Fox(this);
 
         ExecuteAction([&](IGameObject* go)
             {
@@ -75,7 +81,7 @@ namespace Demo
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
         lightNode->attachObject(light);
         lightNode->setPosition(0,150,0 );
-        light->setPowerScale(1);
+        light->setPowerScale(0.5);
         light->setType(Ogre::Light::LT_DIRECTIONAL);
         light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
 
@@ -89,6 +95,26 @@ namespace Demo
     {
         ExecuteBegin();
         //input
+        std::vector<IComponent*> toDelet;
+        //logic here
+        ExecuteAction([&](IComponent* component)
+            {
+                auto go = component->AsBase();
+                if (!go)
+                    return;
+                if (!go->HasComponent<LivingComponent<IGameObject>>())
+                    return;
+                auto life = go->GetComponent<LivingComponent<IGameObject>>();
+                if (!life->IsLiving())
+                    toDelet.push_back(component);
+            });
+        for (int i = (static_cast<int>(toDelet.size()) - 1); i >= 0; --i)
+        {
+            toDelet[i]->AsBase()->Exit();
+            delete toDelet[i];
+        }
+        toDelet.clear();
+
 		KT::Input::Update();
 
         ExecuteAction([](IGameObject* go)
@@ -99,10 +125,23 @@ namespace Demo
         //update
         if (m_camera)
             m_camera->update(timeSinceLast);
-        ExecuteAction([&](IGameObject* go)
+        OgreSolver::Clear();
+        ExecuteAction([&](IComponent<IGameObject,ArenaShooterGameState>* component)
             {
+				auto go = component->AsBase();
                 go->update(timeSinceLast);
+				if (go->HasComponent<CollisionComponent<IGameObject>>())
+				{
+                    auto collide = go->GetComponent<CollisionComponent<IGameObject>>();
+					auto box = collide->GetLocalObbs().at( 0);
+                    OgreSolver::ADD(component, collide->GetGlobalObbs());
+
+				}
             });
+
+      auto result =  OgreSolver::Compute();
+      for (auto& toTest : result)
+		  m_dispatcher(*toTest.lhsObject->AsBase(), *toTest.rhsObject->AsBase(), toTest.result);
 
         if (mDisplayHelpMode != 0)
         {
@@ -113,30 +152,11 @@ namespace Demo
 
         }
 
-        static KT::Chrono<float> destroy;
 
 
 
-
-        std::vector<IComponent*> toDelet;
-        //logic here
-        ExecuteAction([&](IComponent* component)
-        {
-        	auto go = component->AsBase();
-            if (!go)
-                return;
-            if (!go->HasComponent<LivingComponent<IGameObject>>())
-                return;
-            auto life = go->GetComponent<LivingComponent<IGameObject>>();
-            if (!life->IsLiving())
-                toDelet.push_back(component);
-        });
-        for (int i = (static_cast<int>(toDelet.size()) - 1); i >= 0 ; --i)
-        {
-            toDelet[i]->AsBase()->Exit();
-            delete toDelet[i];
-        }
-        toDelet.clear();
+   
+       
 
     }
 

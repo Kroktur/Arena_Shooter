@@ -138,6 +138,15 @@ struct MeshTools
         return positions;
 	}
 
+    static KT::AABB3DF ExtractAABB(const Ogre::Item* item)
+	{
+       Ogre::Aabb aabb = item->getLocalAabb();
+        KT::Vector3F Amin ={ aabb.mCenter.x - aabb.mHalfSize.x,aabb.mCenter.y - aabb.mHalfSize.y,aabb.mCenter.z - aabb.mHalfSize.z };
+        KT::Vector3F Amax = { aabb.mCenter.x + aabb.mHalfSize.x,aabb.mCenter.y + aabb.mHalfSize.y,aabb.mCenter.z + aabb.mHalfSize.z };
+       return KT::AABB3DF(Amin,Amax);
+	}
+
+
 private:
     static size_t getVertexElementTypeSize(Ogre::VertexElementType type)
     {

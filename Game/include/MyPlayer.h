@@ -9,7 +9,7 @@
 class MyPlayer : public IGameObject, public KT::CompositeCRTP<MyPlayer,IGameObject,Demo::ArenaShooterGameState>
 {
 public:
-	MyPlayer(IComposite<IGameObject,Demo::ArenaShooterGameState>* owner);
+	MyPlayer(KT::IComposite<IGameObject,Demo::ArenaShooterGameState>* owner);
 	~MyPlayer() override;
 	void Init() override;
 	void Exit() override;
@@ -98,7 +98,7 @@ public:
 
 
 
-inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) : KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),m_stateMachine(nullptr)
+inline MyPlayer::MyPlayer(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) : KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),m_stateMachine(nullptr)
 {
 
 }
@@ -106,7 +106,7 @@ inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* 
 class MyPlayer2 : public IGameObject, public KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>
 {
 public:
-	MyPlayer2(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>(owner)
+	MyPlayer2(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>(owner)
 	{
 		m_node = node;
 	}
