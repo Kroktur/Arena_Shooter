@@ -19,7 +19,7 @@ protected:
 	static bool isGoingRight();
 	static bool isAttacking();
 	static bool isDashing();
-	static bool isJumping();
+	static bool isJumping();		
 	static bool isRunning();
 	void CommonTransitions();
 };

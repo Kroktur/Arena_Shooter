@@ -74,6 +74,9 @@ namespace Demo
     
         m_dispatcher.Add < Wall,Wall, Collision::Resolve, false >();
 
+        m_dispatcher.Add <Fireball, Wall, Collision::Resolve, true >();
+        m_dispatcher.Add <Fireball, Fox, Collision::Resolve, true >();
+        m_dispatcher.Add <Fireball, MapTile, Collision::Resolve, true >();
         TutorialGameState::createScene01();
         m_manager = mGraphicsSystem->getSceneManager();
 

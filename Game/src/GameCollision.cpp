@@ -46,3 +46,21 @@ void Collision::Resolve(Wall& wall, Wall& wall2, solver solver)
 {
 	return;
 }
+
+void Collision::Resolve(Fireball& fireBall, Wall& wall2, solver solver)
+{
+	auto living = fireBall.GetComponent<LivingComponent<IGameObject>>();
+	living->EnableDeath();
+}
+
+void Collision::Resolve(Fireball& fireBall, Fox& wall2, solver solver)
+{
+	auto living = fireBall.GetComponent<LivingComponent<IGameObject>>();
+	living->EnableDeath();
+}
+
+void Collision::Resolve(Fireball& fireBall, MapTile& wall2, solver solver)
+{
+	auto living = fireBall.GetComponent<LivingComponent<IGameObject>>();
+	living->EnableDeath();
+}

@@ -3,6 +3,7 @@
 #include "Core/CompositeCrtp.h"
 #include "ASGameState.h"
 #include "GameComponent.h"
+#include "MyMeshReader.h"
 
 class Fireball : public IGameObject, public KT::CompositeCRTP<Fireball, IGameObject, Demo::ArenaShooterGameState>
 {
@@ -14,7 +15,7 @@ public:
 	}
 
     ~Fireball() override = default;
-
+ 
     void Init() override
 	{
 		AddComponent<LivingComponent<IGameObject>>();
@@ -27,6 +28,11 @@ public:
 		mnode.second->setScale(1, 1, 1);
 		mnode.second->attachObject(item.second);
 		auto mesh = AddComponent<MeshComponent<IGameObject>>(mnode.second, item.second);
+
+		auto AABB = MeshTools::ExtractAABB(item.second);
+		auto obb = KT::OBB3DF(AABB.GetPts());
+		auto collide = AddComponent<CollisionComponent<IGameObject>>();
+		collide->AddObb(obb);
 	}
 
 	void update(float dt) override
@@ -36,6 +42,8 @@ public:
 
 		m_node->translate(m_direction * m_speed * dt, Ogre::Node::TS_WORLD);
 		m_node->yaw(Ogre::Degree(360 * dt));
+		auto collide = GetComponent<CollisionComponent<IGameObject>>();
+		collide->UpdateGlobalOBB(0, fullTransform2Data(m_node->_getFullTransformUpdated()));
 	}
 
 	void Exit() override
@@ -48,7 +56,7 @@ public:
 		auto it = node->getAttachedObjectIterator();
 		ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
 		node->detachAllObjects();
-		NodePull::Type::ResetObject(node, NodePull::destroy, manager);
+		NodePull::Type::ResetObject(node, NodePull::reset);
 	}
 	void input() override
     {

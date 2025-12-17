@@ -24,15 +24,7 @@ std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
 
 MyPlayer::~MyPlayer()
 {
-	//auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
-	//auto root = Ccrtp->GetRoot();
-	//if (!root)
-	//	return;
-	//auto manager = root->AsRoot()->GetSceneManager();
-	//auto it = m_node->getAttachedObjectIterator();
-	//ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
-	//m_node->detachAllObjects();
-	//NodePull::Type::ResetObject(m_node, NodePull::destroy, manager);
+
 }
 
 void MyPlayer::Init()
@@ -138,17 +130,7 @@ void MyPlayer::update(float deltaTime)
 
 void MyPlayer::input()
 {
-	if (KT::Input::isPressed<KT::KEY>(KT::KEY::A))
-	{
-		/*auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
-		auto root = Ccrtp->GetRoot();
-		root->AsRoot()->ToDoAtBegin([&]
-		{
-				auto* cast = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
-				auto player = new MyPlayer2(cast,nullptr);
-				player->Init();
-		});*/
-	}
+
 
 	if (KT::Input::isPressed<KT::KEY>(KT::KEY::P))
 	{
