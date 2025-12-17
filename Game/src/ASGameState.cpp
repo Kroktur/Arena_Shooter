@@ -24,7 +24,7 @@ namespace Demo
 {
 
 
-	ArenaShooterGameState::ArenaShooterGameState(const Ogre::String& helpDescription)
+	ArenaShooterGameState::ArenaShooterGameState(const Ogre::String& helpDescription) 
         :TutorialGameState(helpDescription)
     {
        

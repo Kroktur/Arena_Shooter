@@ -5,7 +5,6 @@
 #include "Core/CompositeCrtp.h"
 #include "Core/Input.h"
 #include "Core/StateMachine.h"
-#include "Spells.h"
 
 class MyPlayer : public IGameObject, public KT::CompositeCRTP<MyPlayer,IGameObject,Demo::ArenaShooterGameState>
 {
@@ -55,7 +54,6 @@ private:
 	Ogre::Vector3 m_velocity = Ogre::Vector3::ZERO;
 	float m_dashSpeed = 50.0f;
 	MyCamera* m_camera = nullptr;
-	std::vector<std::unique_ptr<Fireball>> m_projectiles;
 	Ogre::Bone* m_fireBone = nullptr;
 	/*int m_fireBoneIndex = -1;
 	Ogre::TagPoint* m_fireTagPoint = nullptr;*/
@@ -76,4 +74,5 @@ inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* 
 		KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),
 		m_stateMachine(nullptr)
 {
+
 }

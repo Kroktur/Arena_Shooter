@@ -10,8 +10,11 @@
 #include "NodePull.h"
 #include "ItemPull.h"
 #include <Animation/OgreBone.h>
+//#include "Spells.h"
 
 #include <Animation/OgreSkeletonInstance.h>
+
+#include "Spells.h"
 
 std::vector<KT::Vector3F> extractVertexPositions(Ogre::Item* item)
 {
@@ -92,14 +95,7 @@ void MyPlayer::update(float deltaTime)
 	node->setOrientation(m_camera->getCamera()->getOrientation());
 
 	// Update projectiles
-	for (int i = m_projectiles.size() - 1; i >= 0; --i)
-	{
-		if (!m_projectiles[i]->update(deltaTime))
-		{
-			m_projectiles[i]->destroy();
-			m_projectiles.erase(m_projectiles.begin() + i);
-		}
-	}
+
 
 	// Dashing movement
 	if (!m_velocity.isZeroLength())
@@ -233,7 +229,10 @@ void MyPlayer::shootFireball()
 	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
 	auto root = Ccrtp->GetRoot();
 	auto manager = root->AsRoot()->GetSceneManager();
-	m_projectiles.push_back(std::make_unique<Fireball>(manager, firePos, forward));
+	//m_projectiles.push_back(std::make_unique<Fireball>(manager, firePos, forward));
+
+	auto fire = new Fireball(this, firePos, forward);
+	fire->Init();
 
 	/*auto mesh = GetComponent<MeshComponent<IGameObject>>();
 	auto item = mesh->GetItem();

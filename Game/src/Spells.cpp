@@ -1,32 +1,44 @@
-#include "Spells.h"
-#include <OgreItem.h>
-#include <OgreMovableObject.h>
-
-
-Fireball::Fireball(Ogre::SceneManager* mgr, const Ogre::Vector3& pos, const Ogre::Vector3& dir)
-	: m_manager(mgr), m_direction(dir.normalisedCopy()), m_speed(200.0f), m_lifetime(2.0f)
-{
-	m_node = m_manager->getRootSceneNode()->createChildSceneNode();
-	m_node->setPosition(pos);
-	m_item = m_manager->createItem("CubeFromMedia_d.mesh");
-	m_node->attachObject(m_item);
-}
-
-bool Fireball::update(float dt)
-{
-    m_lifetime -= dt;
-    if (m_lifetime <= 0)
-        return false;
-
-    m_node->translate(m_direction * m_speed * dt, Ogre::Node::TS_WORLD);
-    m_node->yaw(Ogre::Degree(360 * dt));
-
-    return true;
-}
-
-void Fireball::destroy() const
-{
-    m_node->detachAllObjects();
-    m_manager->destroyItem(m_item);
-    m_manager->destroySceneNode(m_node);
-}
+//#include "Spells.h"
+//#include <OgreItem.h>
+//#include "GameComponent.h"
+//
+//
+//
+//
+//void Fireball::Init()
+//{
+//	/*AddComponent<LivingComponent<IGameObject>>();
+//	auto Ccrtp = static_cast<KT::CompositeCRTP<Fireball, IGameObject, Demo::ArenaShooterGameState>*>(this);
+//	auto root = Ccrtp->GetRoot();
+//	auto manager = root->AsRoot()->GetSceneManager();
+//	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, manager, "CubeFromMedia_d.mesh");
+//	auto mnode = NodePull::Type::PullValidObject(NodePull::create, manager);
+//	mnode.second->setPosition(m_pos);
+//	mnode.second->setScale(1, 1, 1);
+//	mnode.second->attachObject(item.second);
+//	auto mesh = AddComponent<MeshComponent<IGameObject>>(mnode.second, item.second);*/
+//}
+//
+//
+//void Fireball::update(float dt)
+//{
+//	/*auto mesh = GetComponent<MeshComponent<IGameObject>>();
+//	auto m_node = mesh->GetNode();
+//
+//    m_node->translate(m_direction * m_speed * dt, Ogre::Node::TS_WORLD);
+//    m_node->yaw(Ogre::Degree(360 * dt));*/
+//}
+//
+//void Fireball::Exit()
+//{
+//	//auto Ccrtp = static_cast<KT::CompositeCRTP<Fireball, IGameObject, Demo::ArenaShooterGameState>*>(this);
+//	//auto root = Ccrtp->GetRoot();
+//	//auto manager = root->AsRoot()->GetSceneManager();
+//	//auto mesh = GetComponent<MeshComponent<IGameObject>>();
+//	//auto node = mesh->GetNode();
+//	//auto it = node->getAttachedObjectIterator();
+//	//ItemPull::Type::ResetObject(static_cast<Ogre::Item*>(it.getNext()), ItemPull::reset);
+//	//node->detachAllObjects();
+//	//NodePull::Type::ResetObject(node, NodePull::destroy, manager);
+//}
+//
