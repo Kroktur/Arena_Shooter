@@ -72,7 +72,7 @@ namespace Demo
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
         new MyPlayer(this);
-        loadMap::CreateFromFBX(m_manager, mGraphicsSystem);
+        loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
         ExecuteAction([&](IGameObject* go)
             {
                 go->Init();

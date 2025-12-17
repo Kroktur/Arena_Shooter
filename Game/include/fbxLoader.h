@@ -7,15 +7,19 @@
 #include "GraphicsSystem.h"
 #include "OgreSceneManager.h"
 #include "OgreItem.h"
+#include <filesystem>
 struct loadMap
 {
     struct info {
         Ogre::Item* item;
         Ogre::SceneNode* node;
     };
-    static std::vector<info> CreateFromFBX(Ogre::SceneManager *m_manager, Demo::GraphicsSystem *mGraphicSystem)
+    static std::vector<info> CreateFromFBX(Ogre::SceneManager *m_manager, Demo::GraphicsSystem *mGraphicSystem, std::string filePath)
     {
-		const char* fbxPath = "../../FBXFile/montage_map.fbx";
+		std::filesystem::path GlobalPath = "../../../Media/FBXFile/";
+		GlobalPath += filePath;
+		std::string pathStr = GlobalPath.string();
+		const char* fbxPath = pathStr.c_str();
 		auto fileData = loadFile(fbxPath);
 		ofbx::IScene* scene = ofbx::load(fileData.data(), (ofbx::usize)fileData.size(), static_cast<ofbx::u16>(ofbx::LoadFlags::NONE), nullptr, nullptr);
 
