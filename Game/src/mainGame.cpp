@@ -98,6 +98,10 @@ namespace Demo
                 mResourcePath + "Data/Hlms/Pbs/Textures/",
                 "FileSystem", "General"
             );
+            addResourceLocation(
+                mResourcePath + "../FBXFile/",
+                "FileSystem", "General"
+            );
         }
 
     public:

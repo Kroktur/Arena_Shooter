@@ -22,6 +22,7 @@
 #include "ofbx.h"
 #include "fbxLoader.h"
 #include "MyParser.h"
+#include "OgreMesh2.h"
 
 namespace Demo
 {
@@ -55,22 +56,53 @@ namespace Demo
     
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
         //GameState::createScene01();
+        
+        const char* fbxPath = "../../FBXFile/tree.fbx";
+        auto fileData = FBXReader::loadFile(fbxPath);
+        ofbx::IScene* scene = ofbx::load(fileData.data(), (ofbx::usize)fileData.size(), static_cast<ofbx::u16>(ofbx::LoadFlags::NONE), nullptr, nullptr);
 
-        std::vector<char*> files = readFolder();
-        for (size_t j = 0; j < files.size(); ++j) {
-            std::vector<const ofbx::Mesh*> meshList = parser(files[j]);
-            for (size_t i = 0; i < meshList.size(); ++i) {
-                const ofbx::Mesh* meshes = meshList[i];
-                auto item = Demo::createItemFromFBX(m_manager, meshes, meshList.size());
-                if (!item) 
-                    continue;
-                Ogre::SceneNode* node = m_manager->getRootSceneNode(Ogre::SCENE_DYNAMIC)->createChildSceneNode();
-                ofbx::DMatrix global = meshes->getGlobalTransform();
-                node->setPosition(node->getPosition());
-                node->setScale(node->getScale());
+
+        std::vector<Ogre::Item *> m_Items;
+        std::vector<Ogre::Node*> m_sceneNodes;
+
+        if (!scene)
+            throw std::runtime_error("Failed to parse FBX file");
+
+        int loadedCount = 0;
+        int meshc = scene->getMeshCount();
+        for (int i = 0; i < meshc; i++)
+        {
+            const ofbx::Mesh* mesh = scene->getMesh(i);
+            Ogre::Item* item = createItemFromFBX(m_manager, mesh, i);
+            if (item)
+            {
+                //getMaterialFromFBX(item, mesh, i, mGraphicsSystem);
+                Ogre::SceneNode* node = m_manager->getRootSceneNode(Ogre::SCENE_DYNAMIC)
+                    ->createChildSceneNode(Ogre::SCENE_DYNAMIC);
+
+                ofbx::DMatrix globalTransform = mesh->getGlobalTransform();
+
+                Ogre::Vector3 position;
+                Ogre::Quaternion rotation;
+                Ogre::Vector3 scale;
+
+                FBXReader::extractTransform(globalTransform, position, rotation, scale);
+
+                node->setPosition(position);
+                node->setOrientation(rotation);
+                node->setScale(scale);
                 node->attachObject(item);
-            }
+
+                m_Items.push_back(item);
+                m_sceneNodes.push_back(node);
+
+                loadedCount++;
         }
+        scene->destroy();
+
+        if (loadedCount == 0)
+            throw std::runtime_error("No valid meshes found in FBX");
+    }
 
         node3.second->setPosition(0, -10, 0);
         node3.second->setScale(100, 1, 100);
