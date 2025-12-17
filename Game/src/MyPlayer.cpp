@@ -1,26 +1,10 @@
 #include "MyPlayer.h"
-
-#include <iostream>
-
-#include "OgreItem.h"
-#include "OgreMesh2.h"
-#include "OgreSubMesh2.h"
 #include "OgreItem.h"
 #include "OgreSceneNode.h"
-#include "OgreHardwareVertexBuffer.h"
 #include "OgreVector3.h"
-#include "OgreMatrix4.h"
 #include "Tools/Chrono.h"
-#include "Vao/OgreAsyncTicket.h"
 #include <OgreMesh.h>
-#include <OgreSubMesh.h>
-#include <OgreHardwareBuffer.h>
-#include <OgreVector3.h>
-#include <OgreQuaternion.h>
-
 #include "MyMeshReader.h"
-#include "OgreRoot.h"
-#include "Math/MyMath.h"
 #include "Math/Vector3.h"
 #include "PlayerStates.h"
 #include "NodePull.h"
@@ -69,12 +53,12 @@ void MyPlayer::Init()
 	m_fireBone = m_skeletonInstance->getBone("forearm.001.R");*/
 
 
-	/*auto animation = AddComponent<AnimationComponent<IGameObject>>();
-	animation->SetSkeleton(item.second, "Armature.skeleton");
-	animation->AddAnimation("my_animation");
+	auto animation = AddComponent<AnimationComponent<IGameObject>>();
+	animation->SetSkeleton(item.second, "HandArmature.skeleton");
+	animation->AddAnimation("attack_base");
 	animation->SetAnimation(0);
 	animation->GetCurrentAnimation()->setEnabled(true);
-	extractVertexPositions(item.second);*/
+	extractVertexPositions(item.second);
 }
 
 void MyPlayer::Exit()
@@ -100,8 +84,9 @@ void MyPlayer::update(float deltaTime)
 
 	auto item = GetComponent<MeshComponent<IGameObject>>()->GetItem();
 	static KT::Chrono<float> test;
-   /* auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
-	Animation->addTime(deltaTime);*/
+
+    auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
+	Animation->addTime(deltaTime / 4);
 
 	auto node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
 	node->setOrientation(m_camera->getCamera()->getOrientation());
@@ -173,8 +158,6 @@ void MyPlayer::input()
 		GetComponent<LivingComponent<IGameObject>>()->EnableDeath();
 	}
 	/*std::cout << this->GetChild().size() << " \n";*/
-
-
 
 	//NE PAS TOUCHER
 	m_stateMachine->ProcessInput();
@@ -259,18 +242,21 @@ void MyPlayer::shootFireball()
 	if (!skeleton || !m_fireBone)
 		return;
 
+	item->_updateAnimation();
+
 	const Ogre::SimpleMatrixAf4x3& packedMat = m_fireBone->_getFullTransform();
 
-	Ogre::Matrix4 mat;
-	packedMat.store4x3(&mat);
+	Ogre::Matrix4 boneMat;
+	packedMat.store4x3(&boneMat);
 
-	Ogre::Vector3 firePos(
-		mat[0][3],
-		mat[1][3],
-		mat[2][3]);
+	Ogre::Matrix4 worldMat = mesh->GetNode()->_getFullTransform() * boneMat;
+
+
+	Ogre::Vector3 firePos = worldMat.getTrans();
+
 
 	Ogre::Matrix3 rot3x3;
-	mat.extract3x3Matrix(rot3x3);
+	worldMat.extract3x3Matrix(rot3x3);
 
 	Ogre::Quaternion fireRot(rot3x3);
 

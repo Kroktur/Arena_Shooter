@@ -57,8 +57,8 @@ private:
 	MyCamera* m_camera = nullptr;
 	std::vector<std::unique_ptr<Fireball>> m_projectiles;
 	Ogre::Bone* m_fireBone = nullptr;
-	int m_fireBoneIndex = -1;
-	Ogre::TagPoint* m_fireTagPoint = nullptr;
+	/*int m_fireBoneIndex = -1;
+	Ogre::TagPoint* m_fireTagPoint = nullptr;*/
 
 public:
 	// movement variables
@@ -76,5 +76,4 @@ inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* 
 		KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),
 		m_stateMachine(nullptr)
 {
-
 }

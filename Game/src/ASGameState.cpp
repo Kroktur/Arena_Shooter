@@ -48,10 +48,8 @@ namespace Demo
         // INIT ALL PULL 
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
-      
         auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
 
-    
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
 
 
@@ -59,7 +57,7 @@ namespace Demo
         //m_pTtem->setVisibilityFlags(0x000000001);
 
         node3.second->setPosition(0, -10, 0);
-        node3.second->setScale(100, 1, 100);
+        node3.second->setScale(200, 1, 200);
 
         item3.second->setDatablock("Marble");
         node3.second->attachObject(item3.second);
@@ -79,17 +77,17 @@ namespace Demo
 
         m_camera->setTarget(playerNode);
 
-        Ogre::Light* light = m_manager->createLight();
-        Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
-        lightNode->attachObject(light);
-        lightNode->setPosition(0,150,0 );
-        light->setPowerScale(1);
-        light->setType(Ogre::Light::LT_DIRECTIONAL);
-        light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
+        Ogre::Light* sun = m_manager->createLight();
+        Ogre::SceneNode* sunNode = rootNode->createChildSceneNode();
+        sunNode->attachObject(sun);
+        sun->setPowerScale(1.0f);
+        sun->setType(Ogre::Light::LT_DIRECTIONAL);
+        sun->setDirection(Ogre::Vector3(-0.3f, -1.0f, -0.2f).normalisedCopy());
 
-        /*m_manager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
-            Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
-            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);*/
+        m_manager->setAmbientLight(
+            Ogre::ColourValue(0.1f, 0.1f, 0.1f),
+            Ogre::ColourValue(0.02f, 0.02f, 0.02f),
+            -sun->getDirection());
     }
 
     void ArenaShooterGameState::update(float timeSinceLast)

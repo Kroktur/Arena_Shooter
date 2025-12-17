@@ -3,7 +3,7 @@
 //#include "IGameObject.h"
 //#include "Core/CompositeCrtp.h"
 //#include "Core/StateMachine.h"
-//#include "GameComponent.h"
+//#include "MyPlayer.h"
 //
 //class Enemy : public IGameObject, public KT::CompositeCRTP<Enemy, IGameObject, Demo::ArenaShooterGameState>
 //{
@@ -17,7 +17,7 @@
 //    void input() override {}
 //
 //    void SetTarget(MyPlayer* player);
-//    void GetTarget();
+//    MyPlayer* GetTarget() const;
 //
 //    bool IsPlayerInRange(float range);
 //    void MoveTowardPlayer(float dt);
@@ -32,4 +32,34 @@
 //    float m_detectionRange = 25.0f;
 //    float m_attackRange = 2.0f;
 //    float m_attackCooldown = 1.0f;
+//};
+//
+//class RacoonEnemy : public Enemy
+//{
+//public:
+//    RacoonEnemy(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
+//    void Init() override;
+//    void Exit() override;
+//    void update(float dt) override;
+//    void AttackPlayer() override;
+//};
+//
+//class OwlEnemy : public Enemy
+//{
+//    public:
+//    OwlEnemy(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
+//    void Init() override;
+//    void Exit() override;
+//    void update(float dt) override;
+//    void AttackPlayer() override;
+//};
+//
+//class FoxBossEnemy : public Enemy
+//{
+//    public:
+//    FoxBossEnemy(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
+//    void Init() override;
+//    void Exit() override;
+//    void update(float dt) override;
+//    void AttackPlayer() override;
 //};

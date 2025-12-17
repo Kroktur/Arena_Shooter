@@ -4,11 +4,11 @@
 
 
 Fireball::Fireball(Ogre::SceneManager* mgr, const Ogre::Vector3& pos, const Ogre::Vector3& dir)
-	: m_manager(mgr), m_direction(dir.normalisedCopy()), m_speed(50.0f), m_lifetime(2.0f)
+	: m_manager(mgr), m_direction(dir.normalisedCopy()), m_speed(200.0f), m_lifetime(2.0f)
 {
 	m_node = m_manager->getRootSceneNode()->createChildSceneNode();
 	m_node->setPosition(pos);
-	m_item = m_manager->createItem("Plane.mesh");
+	m_item = m_manager->createItem("CubeFromMedia_d.mesh");
 	m_node->attachObject(m_item);
 }
 

@@ -210,6 +210,7 @@ void AttackPlayerState::OnEnter()
 	// Logic to execute when entering attack state
     m_entity->shootFireball();
     m_cooldown = 0.2f;
+
 }
 
 void AttackPlayerState::OnExit()
