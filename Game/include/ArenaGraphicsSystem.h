@@ -8,5 +8,6 @@ public:
     ArenaGraphicsSystem(Demo::GameState* gameState);
     ~ArenaGraphicsSystem();
 
-    void handleRawSdlEvent(const SDL_Event& evt) override;
+    void handleRawSdlEvent(const SDL_Event& evt) ;
+    
 };

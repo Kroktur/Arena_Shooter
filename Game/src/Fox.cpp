@@ -19,15 +19,6 @@ void Fox::Init()
 	mnode.second->attachObject(item.second);
 	AddComponent<MeshComponent<IGameObject>>(mnode.second, item.second);
 	auto AABB = MeshTools::ExtractAABB(item.second);
-	std::vector<KT::Vector3F> pts;
-	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amin.y, AABB.Amin.z });
-	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amin.y, AABB.Amin.z });
-	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amax.y, AABB.Amin.z });
-	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amin.y, AABB.Amax.z });
-	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amax.y, AABB.Amin.z });
-	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amax.y, AABB.Amax.z });
-	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amin.y, AABB.Amax.z });
-	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amax.y, AABB.Amax.z });
 	auto obb = KT::OBB3DF(AABB.GetPts());
 	auto collide = AddComponent<CollisionComponent<IGameObject>>();
 	collide->AddObb(obb);

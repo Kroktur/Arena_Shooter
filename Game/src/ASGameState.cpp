@@ -89,7 +89,8 @@ namespace Demo
 
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
-		new MyPlayer(this);
+        MyPlayer* player = new MyPlayer(this);
+        player->SetCamera(m_camera);
 		new Fox(this);
 
         auto objs = loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
@@ -98,6 +99,12 @@ namespace Demo
             {
                 go->Init();
             });
+
+        auto mesh = player->GetComponent<MeshComponent<IGameObject>>();
+        auto playerNode = mesh->GetNode();
+        m_camera->setTarget(playerNode);
+
+
         for (auto& obj : objs)
         {
             auto map =new MapTile(this, obj.node, obj.item);
@@ -105,20 +112,17 @@ namespace Demo
 			 auto collide = map->GetComponent<CollisionComponent<IGameObject>>();
              OgreSolver::ADDStatic(map, collide->GetGlobalObbs());
         }
-        Ogre::Light* light = m_manager->createLight();
-        Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
-        lightNode->attachObject(light);
-        lightNode->setPosition(0,150,0 );
-        light->setPowerScale(0.5);
-        lightNode->setPosition(0, 150, 0);
-        light->setPowerScale(0.5);
-        light->setType(Ogre::Light::LT_DIRECTIONAL);
-        light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
+        Ogre::Light* sun = m_manager->createLight();
+        Ogre::SceneNode* sunNode = rootNode->createChildSceneNode();
+        sunNode->attachObject(sun);
+        sun->setPowerScale(1.0f);
+        sun->setType(Ogre::Light::LT_DIRECTIONAL);
+        sun->setDirection(Ogre::Vector3(-0.3f, -1.0f, -0.2f).normalisedCopy());
 
-        m_manager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
-            Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
-            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
-
+        m_manager->setAmbientLight(
+            Ogre::ColourValue(0.1f, 0.1f, 0.1f),
+            Ogre::ColourValue(0.02f, 0.02f, 0.02f),
+            -sun->getDirection());
     }
 
     void ArenaShooterGameState::update(float timeSinceLast)
@@ -232,4 +236,11 @@ namespace Demo
             fn();
         instantiate.clear();
     }
+
+    void ArenaShooterGameState::mouseMoved(const SDL_Event& evt)
+    {
+        if (m_camera)
+            m_camera->onMouseMoved(evt);
+    }
+
 }

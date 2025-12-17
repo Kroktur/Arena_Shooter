@@ -9,7 +9,7 @@
 class MyPlayer : public IGameObject, public KT::CompositeCRTP<MyPlayer,IGameObject,Demo::ArenaShooterGameState>
 {
 public:
-	MyPlayer(IComposite<IGameObject,Demo::ArenaShooterGameState>* owner);
+	MyPlayer(KT::IComposite<IGameObject,Demo::ArenaShooterGameState>* owner);
 	~MyPlayer() override;
 	void Init() override;
 	void Exit() override;
@@ -17,21 +17,11 @@ public:
 	void input() override;
 	// --- getters ---
 	MyCamera* getCamera();
-//	float getHealth() const;
-//	float getRunningSpeed() const;
-//	float getMana() const;
-//	float getMaxHealth() const;
+
 
 	// --- setters ---
 	void SetCamera(MyCamera* camera);
-//	void setHealth(float health);
-//	void setRunningSpeed(float speed);
-//	void setMana(float mana);
-//
-//	// --- actions ---
-//	void takeDamage(float damage);
-//	void recoverMana(float amount);
-//	void consumeMana(float amount);
+
 	void startDashForward();
 	void shootFireball();
 	bool isGrounded() const;
@@ -40,13 +30,8 @@ public:
 	void moveTranslation(float deltaTime);
 	void inputPressed();
 	bool isMoving() const;
-//private:
-//	float m_health;
-//	float m_mana;
 	float m_runningSpeed;
-//	float m_shootCadence;
-//	const float m_maxHealth = 100.0f;
-//	const float m_maxMana = 100.0f;
+
 
 private:
 	bool m_ZQSD[4];
@@ -70,7 +55,7 @@ public:
 	float m_dashFriction = 80.0f;
 };
 
-inline MyPlayer::MyPlayer(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) :
+inline MyPlayer::MyPlayer(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) :
 		KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),
 		m_stateMachine(nullptr)
 {

@@ -61,7 +61,12 @@ void MyPlayer::Init()
 	animation->AddAnimation("attack_base");
 	animation->SetAnimation(0);
 	animation->GetCurrentAnimation()->setEnabled(true);
-	extractVertexPositions(item.second);
+
+
+	auto AABB = MeshTools::ExtractAABB(item.second);
+	auto obb = KT::OBB3DF(AABB.GetPts());
+	auto collide = AddComponent<CollisionComponent<IGameObject>>();
+	collide->AddObb(obb);
 }
 
 void MyPlayer::Exit()
@@ -92,8 +97,12 @@ void MyPlayer::update(float deltaTime)
 	Animation->addTime(deltaTime / 4);
 
 	auto node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
+	auto pos = node->getPosition();
 	node->setOrientation(m_camera->getCamera()->getOrientation());
 
+	// update world box position
+	auto collide = GetComponent<CollisionComponent<IGameObject>>();
+	collide->UpdateGlobalOBB(0, fullTransform2Data(node->_getFullTransformUpdated()));
 	// Update projectiles
 
 
@@ -117,7 +126,7 @@ void MyPlayer::update(float deltaTime)
 	if (!m_isGrounded)
 		m_verticalVelocity += m_gravity * deltaTime;
 
-	Ogre::Vector3 pos = node->getPosition();
+	Ogre::Vector3 pos2 = node->getPosition();
 	pos.y += m_verticalVelocity * deltaTime;
 
 	if (pos.y <= 0.0f)
@@ -133,6 +142,9 @@ void MyPlayer::update(float deltaTime)
     {
        //extractVertexPositions(item);
     }
+
+	
+
 }
 
 void MyPlayer::input()
