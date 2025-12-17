@@ -12,7 +12,7 @@
 #include "OgreHlmsPbs.h"
 #include "OgreHlmsPbsDatablock.h"
 
-Ogre::Item* Demo::createItemFromFBX(Ogre::SceneManager* sceneMgr, const ofbx::Mesh* mesh, int meshIdx)
+Ogre::Item* loadMap::createItemFromFBX(Ogre::SceneManager* sceneMgr, const ofbx::Mesh* mesh, int meshIdx)
 {
 	const ofbx::Geometry* geometry = mesh->getGeometry();
 	if (!geometry)
@@ -109,7 +109,7 @@ Ogre::Item* Demo::createItemFromFBX(Ogre::SceneManager* sceneMgr, const ofbx::Me
 	return item;
 }
 
-Ogre::Item* Demo::getMaterialFromFBX(Ogre::Item* item, const ofbx::Mesh* mesh, int meshIdx, GraphicsSystem *mgraphsys)
+Ogre::Item* loadMap::getMaterialFromFBX(Ogre::Item* item, const ofbx::Mesh* mesh, int meshIdx, Demo::GraphicsSystem *mgraphsys)
 {
 	if (!mesh)
 		throw;
@@ -196,7 +196,7 @@ Ogre::Item* Demo::getMaterialFromFBX(Ogre::Item* item, const ofbx::Mesh* mesh, i
 	return item;
 }
 
-std::vector<uint8_t> FBXReader::loadFile(const char* path)
+std::vector<uint8_t> loadMap::loadFile(const char* path)
 {
 	// Load file into memory as byte buffer
 	std::ifstream file(path, std::ios::binary);
@@ -214,7 +214,7 @@ std::vector<uint8_t> FBXReader::loadFile(const char* path)
 	return buffer;
 }
 
-void FBXReader::extractTransform(const ofbx::DMatrix& matrix, Ogre::Vector3& position, Ogre::Quaternion& rotation,
+void loadMap::extractTransform(const ofbx::DMatrix& matrix, Ogre::Vector3& position, Ogre::Quaternion& rotation,
 	Ogre::Vector3& scale)
 {
 	// Extract position from last column
@@ -249,4 +249,3 @@ void FBXReader::extractTransform(const ofbx::DMatrix& matrix, Ogre::Vector3& pos
 	// Convert rotation matrix to quaternion
 	rotation.FromRotationMatrix(rotationMatrix);
 }
-
