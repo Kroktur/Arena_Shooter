@@ -21,7 +21,7 @@
 #include "OgreHlmsSamplerblock.h"
 #include "PhysicsSolver.h"
 #include "Tools/Chrono.h"
-
+#include "GameCollision.h"
 namespace Demo
 {
 
@@ -42,6 +42,10 @@ namespace Demo
 
 	void ArenaShooterGameState::createScene01()
     {
+
+        m_dispatcher.Add<MyPlayer, Fox, Collision::Resolve,false>();
+        m_dispatcher.Add < Fox, MyPlayer, Collision::Resolve,false > ();
+
         TutorialGameState::createScene01();
         m_manager = mGraphicsSystem->getSceneManager();
 

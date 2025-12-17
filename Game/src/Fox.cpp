@@ -28,7 +28,7 @@ void Fox::Init()
 	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amax.y, AABB.Amax.z });
 	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amin.y, AABB.Amax.z });
 	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amax.y, AABB.Amax.z });
-	auto obb = KT::OBB3DF(pts);
+	auto obb = KT::OBB3DF(AABB.GetPts());
 	auto collide = AddComponent<CollisionComponent<IGameObject>>();
 	collide->AddObb(obb);
 }
