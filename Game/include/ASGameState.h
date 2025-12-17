@@ -9,7 +9,10 @@
 #include "OgreCommon.h"
 #include "MyCamera.h"
 #include "NodePull.h"
+#include "Core/CollisionSolver.h"
 #include "Core/CompositeCrtp.h"
+#include "Core/Dispacher.h"
+struct SolverResult;
 
 namespace Demo
 {
@@ -21,6 +24,7 @@ namespace Demo
 		Ogre::SceneManager* m_manager;
 		std::vector<std::function<void()>> instantiate;
 		void ExecuteBegin();
+		KT::FNDispatcher<IGameObject, IGameObject, void, KT::typelist<KT::SolverResult<float,3,KT::Vector3>>> m_dispatcher;
 	public:
 	/*	void DetachItem(int nodeIndex, int itemIndex);
 

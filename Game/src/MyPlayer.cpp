@@ -50,18 +50,33 @@ void MyPlayer::Init()
 	auto Ccrtp = static_cast<KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>*>(this);
 	auto root = Ccrtp->GetRoot();
 	auto manager = root->AsRoot()->GetSceneManager();
-	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.mesh"); }, manager, "Plane.mesh");
+	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, manager, "CubeFromMedia_d.mesh");
 	auto mnode = NodePull::Type::PullValidObject(NodePull::create, manager);
-	mnode.second->setPosition(0, 0, 0);
-	mnode.second->setScale(10, 10, 10);
+	mnode.second->setPosition(-10, 0, 0);
+	mnode.second->setScale(3, 3, 3);
 	mnode.second->attachObject(item.second);
+	Ogre::Item* it = item.second;
+	Ogre::Node* n = mnode.second;
+
 	AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
-	auto animation = AddComponent<AnimationComponent<IGameObject>>();
+	/*auto animation = AddComponent<AnimationComponent<IGameObject>>();
 	animation->SetSkeleton(item.second, "Armature.skeleton");
 	animation->AddAnimation("my_animation");
 	animation->SetAnimation(0);
-	animation->GetCurrentAnimation()->setEnabled(true);
-	extractVertexPositions(item.second);
+	animation->GetCurrentAnimation()->setEnabled(true);*/
+	auto AABB = MeshTools::ExtractAABB(it);
+	std::vector<KT::Vector3F> pts;
+	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amin.y, AABB.Amin.z });
+	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amin.y, AABB.Amin.z });
+	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amax.y, AABB.Amin.z });
+	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amin.y, AABB.Amax.z });
+	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amax.y, AABB.Amin.z });
+	pts.push_back(KT::Vector3F{ AABB.Amin.x, AABB.Amax.y, AABB.Amax.z });
+	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amin.y, AABB.Amax.z });
+	pts.push_back(KT::Vector3F{ AABB.Amax.x, AABB.Amax.y, AABB.Amax.z });
+	auto obb = KT::OBB3DF(AABB.GetPts());
+	auto collide = AddComponent<CollisionComponent<IGameObject>>();
+	collide->AddObb(obb);
 }
 
 void MyPlayer::Exit()
@@ -85,15 +100,13 @@ void MyPlayer::update(float deltaTime)
     // FIN NE PAS TOUCHER
     moveTranslation(deltaTime);
 
-	auto item = GetComponent<MeshComponent<IGameObject>>()->GetItem();
-	static KT::Chrono<float> test;
-   auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
-	Animation->addTime(deltaTime);
+  /* auto Animation = GetComponent<AnimationComponent<IGameObject>>()->GetCurrentAnimation();
+	Animation->addTime(deltaTime);*/
 
-   if (test.GetElapsedTime().AsSeconds() > 5)
-   {
-       //extractVertexPositions(item);
-   }
+	auto collide = GetComponent<CollisionComponent<IGameObject>>();
+	auto node = GetComponent<MeshComponent<IGameObject>>()->GetNode();
+	collide->UpdateGlobalOBB(0, fullTransform2Data(node->_getFullTransformUpdated()));
+
 }
 void MyPlayer::input()
 {
@@ -113,7 +126,6 @@ void MyPlayer::input()
 	{
 		GetComponent<LivingComponent<IGameObject>>()->EnableDeath();
 	}
-	std::cout << this->GetChild().size() << " \n";
 
 
 
