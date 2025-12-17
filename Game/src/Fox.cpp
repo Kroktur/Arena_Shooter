@@ -14,8 +14,8 @@ void Fox::Init()
 	auto manager = root->AsRoot()->GetSceneManager();
 	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "RenardPlane.001.mesh"); }, manager, "RenardPlane.001.mesh");
 	auto mnode = NodePull::Type::PullValidObject(NodePull::create, manager);
-	mnode.second->setPosition(0, 0, 0);
-	mnode.second->setScale(1, 1, 1);
+	mnode.second->setPosition(0, -10, 0);
+	mnode.second->setScale(5, 5, 5);
 	mnode.second->attachObject(item.second);
 	AddComponent<MeshComponent<IGameObject>>(mnode.second, item.second);
 	auto AABB = MeshTools::ExtractAABB(item.second);

@@ -18,7 +18,6 @@ public:
 	// --- getters ---
 	MyCamera* getCamera();
 
-
 	// --- setters ---
 	void SetCamera(MyCamera* camera);
 
@@ -32,7 +31,6 @@ public:
 	bool isMoving() const;
 	float m_runningSpeed;
 
-
 private:
 	bool m_ZQSD[4];
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
@@ -40,17 +38,15 @@ private:
 	float m_dashSpeed = 1000;
 	MyCamera* m_camera = nullptr;
 	Ogre::Bone* m_fireBone = nullptr;
-	/*int m_fireBoneIndex = -1;
-	Ogre::TagPoint* m_fireTagPoint = nullptr;*/
 
 public:
 	// movement variables
 	float m_verticalVelocity = 0.0f;
-	float m_jumpForce = 50;
-	float m_gravity = -45.0f;
+	float m_jumpForce = 100.0f;
+	float m_gravity = -100.0f;
 	bool  m_isGrounded = true;
-	float m_walkSpeed = 100;
-	float m_runSpeed = 150;
+	float m_walkSpeed = 50.0f;
+	float m_runSpeed = 120.0f;
 	float m_currentSpeed = 8.0f;
 	float m_dashFriction = 80.0f;
 };

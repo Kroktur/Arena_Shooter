@@ -53,7 +53,6 @@ struct loadMap
 				node->attachObject(item);
 
 				result.push_back({ item,node});
-	
 
 				loadedCount++;
 			}
@@ -73,11 +72,9 @@ struct loadMap
 		Ogre::Quaternion& rotation, Ogre::Vector3& scale);
 };
 
-
 struct FBXParsedData {
     ofbx::IScene* scene;
     std::vector<const ofbx::Mesh*> meshes;
 };
-
 
 #endif

@@ -3,8 +3,6 @@
 #include <deque>
 #include "Tools/Rtti.h"
 
-
-
 template<typename PullType,size_t pullSize>
 class ObjectPull
 {
@@ -27,7 +25,6 @@ public:
 	{
 		if (m_available.empty())
 			PullItem<FN, Args...>(std::forward<FN>(fn), std::forward<Args>(args)...);
-
 
 		for (auto it = m_available.begin(); it != m_available.end(); ++it)
 		{
@@ -127,7 +124,6 @@ protected:
 	static std::deque<int> m_available;
 	static std::deque<int> m_createPriority;
 };
-
 
 template<typename PullType, size_t pullSize>
 std::map<int, PullType*> ObjectPull<PullType,pullSize>::m_allNode = {};

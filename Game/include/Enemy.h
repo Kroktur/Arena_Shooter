@@ -8,7 +8,7 @@
 class Enemy : public IGameObject, public KT::CompositeCRTP<Enemy, IGameObject, Demo::ArenaShooterGameState>
 {
 public:
-    Enemy(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
+    Enemy(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
     ~Enemy() override {}
 
     void Init() override;
@@ -37,7 +37,7 @@ public:
 class RacoonEnemy : public Enemy
 {
 public:
-    RacoonEnemy(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
+    RacoonEnemy(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
     void Init() override;
     void Exit() override;
     void update(float dt) override;
@@ -47,7 +47,7 @@ public:
 class OwlEnemy : public Enemy
 {
     public:
-    OwlEnemy(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
+    OwlEnemy(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
     void Init() override;
     void Exit() override;
     void update(float dt) override;
@@ -57,7 +57,7 @@ class OwlEnemy : public Enemy
 class FoxBossEnemy : public Enemy
 {
     public:
-    FoxBossEnemy(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
+    FoxBossEnemy(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner);
     void Init() override;
     void Exit() override;
     void update(float dt) override;

@@ -50,8 +50,6 @@ public:
     {
 		std::vector<SolverResult> obbtest;
 
-
-
 		for (int i = 0; i < m_info.size(); ++i)
 		{
 			for (int j = i + 1; j < m_info.size(); ++j)
@@ -72,7 +70,6 @@ public:
 						obbtest.push_back(result);
 					}
 				}
-
 			}
 			for (int j = 0 ; j < m_fixInfo.size(); ++j)
 			{
@@ -81,7 +78,6 @@ public:
 
 				if (KT::CollisionSolver::SolveAABB(m_info[i].bigBox, m_fixInfo[j].bigBox).isColliding)
 				{
-
 					auto betterCollision = SolveComplex(m_info[i].allBox, m_fixInfo[j].allBox);
 					if (betterCollision.isColliding)
 					{
@@ -143,8 +139,6 @@ private:
 	        finalResult.mvt = finalResult.normal * finalResult.depth;
 			finalResult.isColliding = true;
 			return finalResult;
-
-
 	    }
 
     static KT::SolverResult<float,3,KT::Vector3> SolveComplex(const KT::OBB3DF& lhs, const KT::OBB3DF& rhs)

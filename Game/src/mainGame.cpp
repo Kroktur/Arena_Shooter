@@ -15,8 +15,6 @@
 #include "shlobj.h"
 #include "MyParser.h"
 
-
-
 INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine, INT nCmdShow)
 {
     AllocConsole();

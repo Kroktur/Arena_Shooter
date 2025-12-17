@@ -251,7 +251,6 @@ void WalkPlayerState::OnEnter()
 {
     // Logic to execute when entering run state
     m_entity->m_currentSpeed = m_entity->m_walkSpeed;
-    /*m_entity->getCamera()->setFov(100.0f);*/
 }
 
 void WalkPlayerState::OnExit()
@@ -297,7 +296,6 @@ void RunPlayerState::OnEnter()
 {
 	// Logic to execute when entering run state
     m_entity->m_currentSpeed = m_entity->m_runSpeed;
-    /*m_entity->getCamera()->setFov(110.0f);*/
 }
 
 void RunPlayerState::OnExit()
@@ -324,7 +322,6 @@ void RunPlayerState::Update(const float& dt)
 
     if (!isRunning())
         SetNextState<WalkPlayerState>();
-
 }
 
 void RunPlayerState::Render(const float& alpha)

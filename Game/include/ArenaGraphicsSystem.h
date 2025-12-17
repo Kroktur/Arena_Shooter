@@ -9,5 +9,4 @@ public:
     ~ArenaGraphicsSystem();
 
     void handleRawSdlEvent(const SDL_Event& evt) ;
-    
 };

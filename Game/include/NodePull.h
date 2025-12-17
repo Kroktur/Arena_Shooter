@@ -10,7 +10,6 @@ namespace NodePull
         {
             if (!node || !manager)
                 return;
-
             manager->destroySceneNode(node);
         };
 

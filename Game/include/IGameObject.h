@@ -3,8 +3,6 @@
 #include "Core/Component.h"
 #include "Core/CompositeCrtp.h"
 
-
-
 class IGameObject : public KT::ComponentManager<IGameObject>
 {
 public:
