@@ -1,9 +1,11 @@
+
 #include "ASGameState.h"
 
 #include <OgreCamera.h>
 #include <OgreHlmsPbs.h>
 #include <OgreSceneManager.h>
 
+#include "Fox.h"
 #include "GraphicsSystem.h"
 #include "OgreItem.h"
 #include "MyCamera.h"
@@ -18,140 +20,186 @@
 
 #include "OgreHlmsPbsDatablock.h"
 #include "OgreHlmsSamplerblock.h"
+#include "PhysicsSolver.h"
 #include "Tools/Chrono.h"
+#include "GameCollision.h"
+#include "fbxLoader.h"
+#include "MapObject.h"
 
 namespace Demo
 {
 
 
-	ArenaShooterGameState::ArenaShooterGameState(const Ogre::String& helpDescription) 
+    ArenaShooterGameState::ArenaShooterGameState(const Ogre::String& helpDescription)
         :TutorialGameState(helpDescription)
     {
-       
+
     }
 
-	ArenaShooterGameState::~ArenaShooterGameState()
-	{
-      /*  ExecuteAction([&](IGameObject* go)
-            {
-                go->Exit();
-            });*/
-	}
-
-	void ArenaShooterGameState::createScene01()
+    ArenaShooterGameState::~ArenaShooterGameState()
     {
+        /*  ExecuteAction([&](IGameObject* go)
+              {
+                  go->Exit();
+              });*/
+    }
+
+    void ArenaShooterGameState::createScene01()
+    {
+
+        m_dispatcher.Add<MyPlayer, Fox, Collision::Resolve,false>();
+        m_dispatcher.Add < Fox, MyPlayer, Collision::Resolve,false > ();
+
+        m_dispatcher.Add<MyPlayer, MapTile, Collision::Resolve, false>();
+        m_dispatcher.Add < MapTile, MyPlayer, Collision::Resolve, false >();
+
+        m_dispatcher.Add<MapTile, Fox, Collision::Resolve, false>();
+        m_dispatcher.Add < Fox, MapTile, Collision::Resolve, false >();
+    
+
         TutorialGameState::createScene01();
         m_manager = mGraphicsSystem->getSceneManager();
 
-		m_camera = new MyCamera(mGraphicsSystem, false);
-      
+        m_camera = new MyCamera(mGraphicsSystem, false);
+
         // INIT ALL PULL 
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
+
         auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
+    //   auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
+        //   auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
+
 
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+      auto node1 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+       
+       
 
-
-        //m_pTtem->setDatablock("Material.001");
-        //m_pTtem->setVisibilityFlags(0x000000001);
 
         node3.second->setPosition(0, -10, 0);
-        node3.second->setScale(200, 1, 200);
-
+        node3.second->setScale(100, 1, 100);
         item3.second->setDatablock("Marble");
-        node3.second->attachObject(item3.second);
+		node3.second->attachObject(item3.second);
+        //node1.second->setPosition(0, 0, 0);
+        node1.second->setScale(1, 1, 1);
+		//node1.second->attachObject(item1.second);//node1.second->setPosition(0, 0, 0);
+        node1.second->setScale(1, 1, 1);
+        //node1.second->attachObject(item1.second);
 
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
 
-		MyPlayer* player = new MyPlayer(this);
-        player->SetCamera(m_camera);
+		new MyPlayer(this);
+		new Fox(this);
 
+        auto objs = loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
+        
         ExecuteAction([&](IGameObject* go)
             {
                 go->Init();
             });
+        for (auto& obj : objs)
+        {
+            auto map =new MapTile(this, obj.node, obj.item);
+			 map->Init();
+			 auto collide = map->GetComponent<CollisionComponent<IGameObject>>();
+             OgreSolver::ADDStatic(map, collide->GetGlobalObbs());
+        }
+        Ogre::Light* light = m_manager->createLight();
+        Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
+        lightNode->attachObject(light);
+        lightNode->setPosition(0,150,0 );
+        light->setPowerScale(0.5);
+        lightNode->setPosition(0, 150, 0);
+        light->setPowerScale(0.5);
+        light->setType(Ogre::Light::LT_DIRECTIONAL);
+        light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
 
-        auto mesh = player->GetComponent<MeshComponent<IGameObject>>();
-        auto playerNode = mesh->GetNode();
+        m_manager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
+            Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
+            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
 
-        m_camera->setTarget(playerNode);
-
-        Ogre::Light* sun = m_manager->createLight();
-        Ogre::SceneNode* sunNode = rootNode->createChildSceneNode();
-        sunNode->attachObject(sun);
-        sun->setPowerScale(1.0f);
-        sun->setType(Ogre::Light::LT_DIRECTIONAL);
-        sun->setDirection(Ogre::Vector3(-0.3f, -1.0f, -0.2f).normalisedCopy());
-
-        m_manager->setAmbientLight(
-            Ogre::ColourValue(0.1f, 0.1f, 0.1f),
-            Ogre::ColourValue(0.02f, 0.02f, 0.02f),
-            -sun->getDirection());
     }
 
     void ArenaShooterGameState::update(float timeSinceLast)
     {
         ExecuteBegin();
         //input
+
 		KT::Input::Update();
-
-        ExecuteAction([](IGameObject* go)
-            {
-                go->input();
-            });
-
-        /*TutorialGameState::update(timeSinceLast);*/
-
-        //update
-        if (m_camera)
-            m_camera->update(timeSinceLast);
-
-        ExecuteAction([&](IGameObject* go)
-            {
-                go->update(timeSinceLast);
-            });
-
-        if (mDisplayHelpMode != 0)
-        {
-            // Show FPS
-            Ogre::String finalText;
-            generateDebugText(timeSinceLast, finalText);
-        }
-
-        static KT::Chrono<float> destroy;
-
         std::vector<IComponent*> toDelet;
         //logic here
         ExecuteAction([&](IComponent* component)
-        {
-        	auto go = component->AsBase();
-            if (!go)
-                return;
-            if (!go->HasComponent<LivingComponent<IGameObject>>())
-                return;
-            auto life = go->GetComponent<LivingComponent<IGameObject>>();
-            if (!life->IsLiving())
-                toDelet.push_back(component);
-        });
-        for (int i = (static_cast<int>(toDelet.size()) - 1); i >= 0 ; --i)
+            {
+                auto go = component->AsBase();
+                if (!go)
+                    return;
+                if (!go->HasComponent<LivingComponent<IGameObject>>())
+                    return;
+                auto life = go->GetComponent<LivingComponent<IGameObject>>();
+                if (!life->IsLiving())
+                    toDelet.push_back(component);
+            });
+        for (int i = (static_cast<int>(toDelet.size()) - 1); i >= 0; --i)
         {
             toDelet[i]->AsBase()->Exit();
             delete toDelet[i];
         }
         toDelet.clear();
 
-    }
+        KT::Input::Update();
 
-    void ArenaShooterGameState::mouseMoved(const SDL_Event& evt)
-    {
+        ExecuteAction([](IGameObject* go)
+            {
+                go->input();
+            });
+
+        //update
         if (m_camera)
-            m_camera->onMouseMoved(evt);
+            m_camera->update(timeSinceLast);
+        OgreSolver::Clear();
+
+        ExecuteAction([&](IComponent<IGameObject, ArenaShooterGameState>* component)
+            {
+				auto go = component->AsBase();
+                go->update(timeSinceLast);
+				if (go->HasComponent<CollisionComponent<IGameObject>>())
+				{
+                    auto collide = go->GetComponent<CollisionComponent<IGameObject>>();
+                    if (collide->GetLayer() != "Map")
+                        OgreSolver::ADD(component, collide->GetGlobalObbs());
+
+				}
+               
+            });
+
+      auto result =  OgreSolver::Compute();
+      for (auto& toTest : result)
+		  m_dispatcher(*toTest.lhsObject->AsBase(), *toTest.rhsObject->AsBase(), toTest.result);
+
+
+        if (mDisplayHelpMode != 0)
+        {
+            // Show FPS
+            Ogre::String finalText;
+            generateDebugText(timeSinceLast, finalText);
+
+
+        }
+
+
+
+
+   
+       
+
+
+
     }
 
     void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
     {
-       // TutorialGameState::keyReleased(arg);
+        // TutorialGameState::keyReleased(arg);
     }
 
     Ogre::SceneManager* ArenaShooterGameState::GetSceneManager()
@@ -161,16 +209,16 @@ namespace Demo
 
     void ArenaShooterGameState::destroyScene()
     {
-          ExecuteAction([&](IGameObject* go)
-          {
-              go->Exit();
-          });
+        ExecuteAction([&](IGameObject* go)
+            {
+                go->Exit();
+            });
         TutorialGameState::destroyScene();
     }
 
     void ArenaShooterGameState::deinitialize()
     {
-	    TutorialGameState::deinitialize();
+        TutorialGameState::deinitialize();
     }
 
     void ArenaShooterGameState::ToDoAtBegin(std::function<void()> fn)

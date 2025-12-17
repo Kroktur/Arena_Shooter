@@ -1,6 +1,7 @@
 #pragma once
 #include "Math/AABB.h"
 #include "Math/BoundingSphere.h"
+#include "Math/OBB.h"
 #include "Math/VectorND.h"
 
 namespace KT
@@ -46,8 +47,9 @@ namespace KT
 				vector_type rhsCenter = KT::GetCenter(rhsPoints);
 				vector_type Dir = rhsCenter - lhsCenter;
 				// Allaxes
-				for (auto& axe : axes)
+				for (auto& axetoTest : axes)
 				{
+					VectorType<type> axe = axetoTest.Normalize();
 					auto ProjectLeft = GetMinAndMaxFromProjection(lhsPoints, axe);
 					auto ProjectRight = GetMinAndMaxFromProjection(rhsPoints, axe);
 					auto overlapInfo = OverLapResult(ProjectLeft, ProjectRight);
@@ -64,7 +66,7 @@ namespace KT
 							smallestAxis = (axe * - 1).Normalize();
 						else
 						{
-							smallestAxis = axe;
+							smallestAxis = axe.Normalize();
 						}
 					}
 				}
@@ -136,7 +138,7 @@ namespace KT
 			type dist = distanceBetwenCenter.At(i);
 			type totalHalf = totalHalfSize.At(i);
 			type overlap = totalHalf - std::abs(dist);
-			if (overlap <= 0)
+			if (overlap < 0)
 				throw std::out_of_range("should not pass here");
 			if (overlap < minOverlap)
 			{
@@ -218,7 +220,7 @@ namespace KT
 				axes.push_back(rhs.axes.at(i).Normalize());
 				for (size_t j = 0; j < size; ++j)
 				{
-					auto cross = lhs.axes.at(i).Normalize().Cross(rhs.axes.at(j).Normalize());
+					auto cross = static_cast<KT::Vector3<type>>(lhs.axes.at(i).Normalize()).Cross(rhs.axes.at(j).Normalize());
 					if (!Math::IsNull(cross.SquareLength(), Math::EPSILON_V<type> *Math::EPSILON_V<type>))
 						axes.push_back(cross.Normalize());
 				}

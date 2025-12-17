@@ -13,6 +13,7 @@
 #include "MainEntryPointHelper.h"
 #include "System/MainEntryPoints.h"
 #include "shlobj.h"
+#include "MyParser.h"
 
 
 
@@ -21,6 +22,8 @@ INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
+	return Demo::MainEntryPoints::mainAppSingleThreaded(DEMO_MAIN_ENTRY_PARAMS);
+
     try
     {
         return Demo::MainEntryPoints::mainAppSingleThreaded(DEMO_MAIN_ENTRY_PARAMS);
@@ -37,6 +40,7 @@ INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine
         __debugbreak();
         return EXIT_FAILURE;
     }
+    return 0;
 }
 
 namespace Demo
@@ -47,10 +51,10 @@ namespace Demo
         {
             return GraphicsSystem::setupCompositor();
         }
+
         void createCamera() override
         {
             mCamera = mSceneManager->createCamera("Main Camera");
-
          /*   mCamera->setPosition(0, 30, 0);
             mCamera->lookAt(0, 0, 0);*/
         }
@@ -94,6 +98,10 @@ namespace Demo
             );
             addResourceLocation(
                 mResourcePath + "Data/Hlms/Pbs/Textures/",
+                "FileSystem", "General"
+            );
+            addResourceLocation(
+                mResourcePath + "../FBXFile/",
                 "FileSystem", "General"
             );
         }

@@ -3,6 +3,11 @@
 #include <vector>
 #include <stdexcept>
 
+namespace KT
+{
+	
+
+
 template<typename BaseType, typename RootType>
 class IComposite;
 
@@ -319,3 +324,5 @@ template <typename BaseType, typename RootType>
 ILeaf<BaseType, RootType>::ILeaf(composite* owner) : component(owner)
 {
 }
+
+	}
