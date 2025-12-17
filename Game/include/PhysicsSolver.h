@@ -34,6 +34,14 @@ public:
 		result.bigBox = ComputeAllAABB(boxes);
 		m_info.push_back(result);
     }
+	static void ADDStatic(BaseComponent* object, const std::vector<KT::OBB3DF>& boxes)
+	{
+		auto result = SolverInfo();
+		result.object = object;
+		result.allBox = boxes;
+		result.bigBox = ComputeAllAABB(boxes);
+		m_fixInfo.push_back(result);
+	}
     static void Clear()
     {
         m_info.clear();
@@ -50,6 +58,7 @@ public:
 			{
 				if (m_info[i].object->IsInSubTree(m_info[j].object) || m_info[j].object->IsInSubTree(m_info[i].object))
 					continue;
+
 				if (KT::CollisionSolver::SolveAABB(m_info[i].bigBox, m_info[j].bigBox).isColliding)
 				{
 
@@ -64,6 +73,25 @@ public:
 					}
 				}
 
+			}
+			for (int j = 0 ; j < m_fixInfo.size(); ++j)
+			{
+				if (m_info[i].object->IsInSubTree(m_fixInfo[j].object) || m_fixInfo[j].object->IsInSubTree(m_info[i].object))
+					continue;
+
+				if (KT::CollisionSolver::SolveAABB(m_info[i].bigBox, m_fixInfo[j].bigBox).isColliding)
+				{
+
+					auto betterCollision = SolveComplex(m_info[i].allBox, m_fixInfo[j].allBox);
+					if (betterCollision.isColliding)
+					{
+						SolverResult result;
+						result.lhsObject = m_info[i].object;
+						result.rhsObject = m_fixInfo[j].object;
+						result.result = betterCollision;
+						obbtest.push_back(result);
+					}
+				}
 			}
 		}
 		return obbtest;
@@ -143,5 +171,7 @@ private:
         return box;
     }
     static std::vector<SolverInfo> m_info;
+	static std::vector<SolverInfo> m_fixInfo;
 };
 inline std::vector<SolverInfo> OgreSolver::m_info = {};
+inline std::vector<SolverInfo> OgreSolver::m_fixInfo = {};

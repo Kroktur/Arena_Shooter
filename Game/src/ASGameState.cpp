@@ -24,6 +24,8 @@
 #include "Tools/Chrono.h"
 #include "GameCollision.h"
 #include "fbxLoader.h"
+#include "MapObject.h"
+
 namespace Demo
 {
 
@@ -48,7 +50,11 @@ namespace Demo
         m_dispatcher.Add<MyPlayer, Fox, Collision::Resolve,false>();
         m_dispatcher.Add < Fox, MyPlayer, Collision::Resolve,false > ();
 
+        m_dispatcher.Add<MyPlayer, MapTile, Collision::Resolve, false>();
+        m_dispatcher.Add < MapTile, MyPlayer, Collision::Resolve, false >();
 
+        m_dispatcher.Add<MapTile, Fox, Collision::Resolve, false>();
+        m_dispatcher.Add < Fox, MapTile, Collision::Resolve, false >();
     
 
         TutorialGameState::createScene01();
@@ -86,12 +92,19 @@ namespace Demo
 		new MyPlayer(this);
 		new Fox(this);
 
-        loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
+        auto objs = loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
+        
         ExecuteAction([&](IGameObject* go)
             {
                 go->Init();
             });
-
+        for (auto& obj : objs)
+        {
+            auto map =new MapTile(this, obj.node, obj.item);
+			 map->Init();
+			 auto collide = map->GetComponent<CollisionComponent<IGameObject>>();
+             OgreSolver::ADDStatic(map, collide->GetGlobalObbs());
+        }
         Ogre::Light* light = m_manager->createLight();
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
         lightNode->attachObject(light);
@@ -153,8 +166,8 @@ namespace Demo
 				if (go->HasComponent<CollisionComponent<IGameObject>>())
 				{
                     auto collide = go->GetComponent<CollisionComponent<IGameObject>>();
-					auto box = collide->GetLocalObbs().at( 0);
-                    OgreSolver::ADD(component, collide->GetGlobalObbs());
+                    if (collide->GetLayer() != "Map")
+                        OgreSolver::ADD(component, collide->GetGlobalObbs());
 
 				}
                

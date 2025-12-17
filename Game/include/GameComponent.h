@@ -164,8 +164,17 @@ public:
 			throw std::out_of_range("index not found");
 		m_globalObbs[index] = TransformOBB::ApplyTransform(m_localObbs[index],data);
 	}
-
+	void SetLayer(const std::string& layer)
+	{
+		layerStr = layer;
+	}
+	std::string GetLayer() const
+	{
+		return layerStr;
+	}
 private:
+	//TODO improve system
+	std::string layerStr;
 	std::vector<KT::OBB3DF> m_localObbs;
 	std::vector< KT::OBB3DF> m_globalObbs;
 };
