@@ -69,7 +69,6 @@ namespace Demo
       auto node1 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
        
        
-        auto node1 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
 
 
         node3.second->setPosition(0, -10, 0);
@@ -78,9 +77,7 @@ namespace Demo
 		node3.second->attachObject(item3.second);
         //node1.second->setPosition(0, 0, 0);
         node1.second->setScale(1, 1, 1);
-		//node1.second->attachObject(item1.second);
-        node3.second->attachObject(item3.second);
-        //node1.second->setPosition(0, 0, 0);
+		//node1.second->attachObject(item1.second);//node1.second->setPosition(0, 0, 0);
         node1.second->setScale(1, 1, 1);
         //node1.second->attachObject(item1.second);
 
@@ -89,7 +86,6 @@ namespace Demo
 		new MyPlayer(this);
 		new Fox(this);
 
-        new MyPlayer(this);
         loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
         ExecuteAction([&](IGameObject* go)
             {
@@ -116,25 +112,6 @@ namespace Demo
     {
         ExecuteBegin();
         //input
-        std::vector<IComponent*> toDelet;
-        //logic here
-        ExecuteAction([&](IComponent* component)
-            {
-                auto go = component->AsBase();
-                if (!go)
-                    return;
-                if (!go->HasComponent<LivingComponent<IGameObject>>())
-                    return;
-                auto life = go->GetComponent<LivingComponent<IGameObject>>();
-                if (!life->IsLiving())
-                    toDelet.push_back(component);
-            });
-        for (int i = (static_cast<int>(toDelet.size()) - 1); i >= 0; --i)
-        {
-            toDelet[i]->AsBase()->Exit();
-            delete toDelet[i];
-        }
-        toDelet.clear();
 
 		KT::Input::Update();
         std::vector<IComponent*> toDelet;
@@ -168,12 +145,10 @@ namespace Demo
         if (m_camera)
             m_camera->update(timeSinceLast);
         OgreSolver::Clear();
-        ExecuteAction([&](IComponent<IGameObject,ArenaShooterGameState>* component)
-       
+
         ExecuteAction([&](IComponent<IGameObject, ArenaShooterGameState>* component)
             {
 				auto go = component->AsBase();
-                auto go = component->AsBase();
                 go->update(timeSinceLast);
 				if (go->HasComponent<CollisionComponent<IGameObject>>())
 				{

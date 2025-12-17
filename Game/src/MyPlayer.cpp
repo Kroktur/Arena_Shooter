@@ -56,8 +56,8 @@ void MyPlayer::Init()
 	mnode.second->setScale(3, 3, 3);
 	mnode.second->attachObject(item.second);
 	Ogre::Item* it = item.second;
+	it->setDatablock("Rocks");
 	Ogre::Node* n = mnode.second;
-
 	AddComponent<MeshComponent<IGameObject>>(mnode.second,item.second);
 	/*auto animation = AddComponent<AnimationComponent<IGameObject>>();
 	animation->SetSkeleton(item.second, "Armature.skeleton");
