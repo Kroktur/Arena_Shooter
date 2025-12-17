@@ -6,7 +6,6 @@
 #include "Core/Input.h"
 #include "Core/StateMachine.h"
 
-
 class Fox : public IGameObject, public KT::CompositeCRTP<Fox, IGameObject, Demo::ArenaShooterGameState>
 {
 public:

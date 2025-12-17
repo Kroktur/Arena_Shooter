@@ -24,12 +24,12 @@ public:
 
 	// --- input ---
 	void onMouseMoved(const SDL_Event& arg);
-	bool keyPressed(const SDL_KeyboardEvent& arg);  // Returns true if we've handled the event
-	bool keyReleased(const SDL_KeyboardEvent& arg); // Returns true if we've handled the event
+	bool keyPressed(const SDL_KeyboardEvent& arg);
+	bool keyReleased(const SDL_KeyboardEvent& arg);
 	void Input();
 private:
 	Ogre::Camera* m_camera;
-	Ogre::SceneNode* m_camNode; // Node to which the camera is attached
+	Ogre::SceneNode* m_camNode;
 
 	// --- spring system ---
 	Ogre::Vector3 m_targetPosition;
@@ -43,12 +43,8 @@ private:
 	// --- booleans ---
 	bool m_ZQSD[4];
 	bool m_directionalCross[4];
-	bool m_speedModifier;
-	bool m_useSceneNode;
 
-	// need our own graphics system pointer - TDL
 	Demo::GraphicsSystem* m_graphicsSystem;
-
 	Ogre::SceneNode* m_target = nullptr;
 
 public:

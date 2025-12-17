@@ -20,8 +20,6 @@ namespace Demo
 	{
 		MyCamera* m_camera;
 		Ogre::Item* m_pTtem;
-
-
 	private:
 		Ogre::SceneNode* mSceneNode;
 		Ogre::SceneNode* m_playerNode;

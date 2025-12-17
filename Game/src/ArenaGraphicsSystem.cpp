@@ -13,7 +13,6 @@ ArenaGraphicsSystem::~ArenaGraphicsSystem()
 
 void ArenaGraphicsSystem::handleRawSdlEvent(const SDL_Event& evt)
 {
-
     if (evt.type == SDL_MOUSEMOTION)
     {
         if (mCurrentGameState)

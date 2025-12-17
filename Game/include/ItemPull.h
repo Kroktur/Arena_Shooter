@@ -8,7 +8,6 @@
 
 namespace ItemPull
 {
-
 	using Type = ObjectPull<Ogre::Item, 16>;
 
     static auto destroy = [](Ogre::Item* node, Ogre::SceneManager* manager) ->void

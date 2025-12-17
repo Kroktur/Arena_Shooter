@@ -20,8 +20,6 @@
 #include "Math/MyMath.h"
 #include "Math/Vector3.h"
 
-
-
 struct MeshTools
 {
 	static Ogre::MeshPtr ExtractMesh(const Ogre::Item* item) 
@@ -53,14 +51,9 @@ struct MeshTools
         const void* bufferData = nullptr;
 
         if (vertexBuffer->getShadowCopy())
-        {
             bufferData = vertexBuffer->getShadowCopy();
-        }
         else
-        {
-            // map
             bufferData = vertexBuffer->map(0, vertexBuffer->getNumElements());
-        }
 
         if (!bufferData)
             return positions;

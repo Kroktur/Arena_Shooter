@@ -28,12 +28,9 @@
 
 namespace Demo
 {
-
-
     ArenaShooterGameState::ArenaShooterGameState(const Ogre::String& helpDescription)
         :TutorialGameState(helpDescription)
     {
-
     }
 
     ArenaShooterGameState::~ArenaShooterGameState()
@@ -55,7 +52,6 @@ namespace Demo
 
         m_dispatcher.Add<MapTile, Fox, Collision::Resolve, false>();
         m_dispatcher.Add < Fox, MapTile, Collision::Resolve, false >();
-    
 
         TutorialGameState::createScene01();
         m_manager = mGraphicsSystem->getSceneManager();
@@ -65,17 +61,12 @@ namespace Demo
         // INIT ALL PULL 
         m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
 
-
         auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
-    //   auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
-        //   auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
-
+        //auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
+        //auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
 
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
-      auto node1 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
-       
-       
-
+        auto node1 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
 
         node3.second->setPosition(0, -10, 0);
         node3.second->setScale(100, 1, 100);
@@ -104,13 +95,12 @@ namespace Demo
         auto playerNode = mesh->GetNode();
         m_camera->setTarget(playerNode);
 
-
         for (auto& obj : objs)
         {
             auto map =new MapTile(this, obj.node, obj.item);
-			 map->Init();
-			 auto collide = map->GetComponent<CollisionComponent<IGameObject>>();
-             OgreSolver::ADDStatic(map, collide->GetGlobalObbs());
+        	map->Init();
+        	auto collide = map->GetComponent<CollisionComponent<IGameObject>>();
+        	OgreSolver::ADDStatic(map, collide->GetGlobalObbs());
         }
         Ogre::Light* sun = m_manager->createLight();
         Ogre::SceneNode* sunNode = rootNode->createChildSceneNode();
@@ -172,33 +162,19 @@ namespace Demo
                     auto collide = go->GetComponent<CollisionComponent<IGameObject>>();
                     if (collide->GetLayer() != "Map")
                         OgreSolver::ADD(component, collide->GetGlobalObbs());
-
 				}
-               
             });
 
       auto result =  OgreSolver::Compute();
       for (auto& toTest : result)
 		  m_dispatcher(*toTest.lhsObject->AsBase(), *toTest.rhsObject->AsBase(), toTest.result);
 
-
         if (mDisplayHelpMode != 0)
         {
             // Show FPS
             Ogre::String finalText;
             generateDebugText(timeSinceLast, finalText);
-
-
         }
-
-
-
-
-   
-       
-
-
-
     }
 
     void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
@@ -242,5 +218,4 @@ namespace Demo
         if (m_camera)
             m_camera->onMouseMoved(evt);
     }
-
 }

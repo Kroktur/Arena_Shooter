@@ -115,6 +115,11 @@ namespace Demo
         }
     }
     //-----------------------------------------------------------------------------------
+    void GraphicsSystem::setRequiePersistentDepthBuf( bool require )
+    {
+        mRequirePersistentDepthBuf = require;
+    }
+    //-----------------------------------------------------------------------------------
     bool GraphicsSystem::isWriteAccessFolder( const Ogre::String &folderPath,
                                               const Ogre::String &fileToSave )
     {
@@ -182,11 +187,28 @@ namespace Demo
 
         if( mAlwaysAskForConfig || !mRoot->restoreConfig() )
         {
+#ifdef AUTO_TESTING
+            Ogre::RenderSystem *rs;
+            if( !renderer.empty() )
+            {
+                rs = mRoot->getRenderSystemByName( renderer );
+            }
+            else
+            {
+                rs = mRoot->getRenderSystemByName( "OpenGL 3+ Rendering Subsystem" );
+            }
+
+            mRoot->setRenderSystem( rs );
+            rs->setConfigOption( "Full Screen", "Yes" );
+            rs->setConfigOption( "VSync", "Yes" );
+            mRoot->saveConfig();
+#else
             if( !mRoot->showConfigDialog() )
             {
                 mQuit = true;
                 return;
             }
+#endif
         }
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
@@ -311,6 +333,9 @@ namespace Demo
         params.insert( std::make_pair(
             "ANativeWindow",
             Ogre::StringConverter::toString( (uintptr_t)AndroidSystems::getNativeWindow() ) ) );
+        params.insert( std::make_pair(
+            "AndroidJniProvider",
+            Ogre::StringConverter::toString( (uintptr_t)AndroidSystems::getJniProvider() ) ) );
 #endif
 
         params.insert( std::make_pair( "title", windowTitle ) );
@@ -320,6 +345,15 @@ namespace Demo
         params.insert( std::make_pair( "FSAA", cfgOpts["FSAA"].currentValue ) );
         params.insert( std::make_pair( "vsync", cfgOpts["VSync"].currentValue ) );
         params.insert( std::make_pair( "reverse_depth", "Yes" ) );
+
+        if( mRequirePersistentDepthBuf )
+        {
+            params.insert( std::make_pair( "memoryless_depth_buffer", "No" ) );
+        }
+        else
+        {
+            params.insert( std::make_pair( "memoryless_depth_buffer", "Yes" ) );
+        }
 
         initMiscParamsListener( params );
 
@@ -415,6 +449,7 @@ namespace Demo
             }
 
             mInputHandler->_handleSdlEvents( evt );
+            handleRawSdlEvent( evt );
         }
 #endif
 
@@ -601,6 +636,16 @@ namespace Demo
         Ogre::Archive *rwAccessFolderArchive =
             archiveManager.load( mWriteAccessFolder, "FileSystem", true );
 
+        if( mUseMicrocodeCache /* mUsePipelineCache */ )
+        {
+            const Ogre::String filename = "pipelineCache.cache";
+            if( rwAccessFolderArchive->exists( filename ) )
+            {
+                Ogre::DataStreamPtr pipelineCacheFile = rwAccessFolderArchive->open( filename );
+                mRoot->getRenderSystem()->loadPipelineCache( pipelineCacheFile );
+            }
+        }
+
         if( mUseMicrocodeCache )
         {
             // Make sure the microcode cache is enabled.
@@ -615,6 +660,8 @@ namespace Demo
 
         if( mUseHlmsDiskCache )
         {
+            const size_t numThreads =
+                std::max<size_t>( 1u, Ogre::PlatformInformation::getNumLogicalCores() );
             for( size_t i = Ogre::HLMS_LOW_LEVEL + 1u; i < Ogre::HLMS_MAX; ++i )
             {
                 Ogre::Hlms *hlms = hlmsManager->getHlms( static_cast<Ogre::HlmsTypes>( i ) );
@@ -629,7 +676,7 @@ namespace Demo
                         {
                             Ogre::DataStreamPtr diskCacheFile = rwAccessFolderArchive->open( filename );
                             diskCache.loadFrom( diskCacheFile );
-                            diskCache.applyTo( hlms );
+                            diskCache.applyTo( hlms, numThreads );
                         }
                     }
                     catch( Ogre::Exception & )
@@ -664,7 +711,7 @@ namespace Demo
                 for( size_t i = Ogre::HLMS_LOW_LEVEL + 1u; i < Ogre::HLMS_MAX; ++i )
                 {
                     Ogre::Hlms *hlms = hlmsManager->getHlms( static_cast<Ogre::HlmsTypes>( i ) );
-                    if( hlms )
+                    if( hlms && hlms->isShaderCodeCacheDirty() )
                     {
                         diskCache.copyFrom( hlms );
 
@@ -680,6 +727,13 @@ namespace Demo
                 const Ogre::String filename = "microcodeCodeCache.cache";
                 Ogre::DataStreamPtr shaderCacheFile = rwAccessFolderArchive->create( filename );
                 Ogre::GpuProgramManager::getSingleton().saveMicrocodeCache( shaderCacheFile );
+            }
+
+            if( mUseMicrocodeCache /* mUsePipelineCache */ )
+            {
+                const Ogre::String filename = "pipelineCache.cache";
+                Ogre::DataStreamPtr shaderCacheFile = rwAccessFolderArchive->create( filename );
+                mRoot->getRenderSystem()->savePipelineCache( shaderCacheFile );
             }
 
             archiveManager.unload( mWriteAccessFolder );
@@ -819,6 +873,17 @@ namespace Demo
 
         // Initialise, parse scripts etc
         Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups( true );
+
+        try
+        {
+            mRoot->getHlmsManager()->loadBlueNoise();
+        }
+        catch( Ogre::FileNotFoundException &e )
+        {
+            Ogre::LogManager::getSingleton().logMessage( e.getFullDescription(), Ogre::LML_CRITICAL );
+            Ogre::LogManager::getSingleton().logMessage(
+                "WARNING: Blue Noise textures could not be loaded.", Ogre::LML_CRITICAL );
+        }
 
         // Initialize resources for LTC area lights and accurate specular reflections (IBL)
         Ogre::Hlms *hlms = mRoot->getHlmsManager()->getHlms( Ogre::HLMS_PBS );
@@ -1075,4 +1140,10 @@ namespace Demo
             ++itor;
         }
     }
+#ifdef AUTO_TESTING
+    void GraphicsSystem::setRendererParam( std::string renderSubsystem )
+    {
+        this->renderer = renderSubsystem;
+    }
+#endif
 }  // namespace Demo

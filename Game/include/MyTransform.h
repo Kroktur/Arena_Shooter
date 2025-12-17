@@ -83,7 +83,6 @@ private:
 		for (int i = 0; i < 3; ++i) {
 			KT::VectorND<float, 4> axeHomogenous{ obb.axes[i].x, obb.axes[i].y,obb.axes[i].z, 0.f };
 			KT::VectorND<float, 4> transformedAxe = transformRotate.MatrixProduct(axeHomogenous);
-
 			obb.axes[i].x = transformedAxe[0];
 			obb.axes[i].y = transformedAxe[1];
 			obb.axes[i].z = transformedAxe[2];
@@ -101,5 +100,4 @@ private:
 		obb.center.z = transformedCenter[2];
 		return obb;
 	}
-
 };

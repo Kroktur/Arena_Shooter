@@ -2,7 +2,9 @@
 #include "Fox.h"
 #include "MapObject.h"
 #include "MyPlayer.h"
+
 using solver = KT::SolverResult<float, 3, KT::Vector3>;
+
 namespace Collision
 {
 	void Resolve(MyPlayer& player, Fox& fox, solver solver);
@@ -13,5 +15,4 @@ namespace Collision
 
 	void Resolve(MapTile& player, Fox& fox, solver solver);
 	void Resolve(Fox& fox, MapTile& player, solver solver);
-
 }
