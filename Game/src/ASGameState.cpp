@@ -36,7 +36,7 @@ namespace Demo
 
 	ArenaShooterGameState::~ArenaShooterGameState()
 	{
-      /*  ExecuteAction([&](IGameObject* go)
+        /*  ExecuteAction([&](IGameObject* go)
             {
                 go->Exit();
             });*/
@@ -57,7 +57,7 @@ namespace Demo
         auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
         //GameState::createScene01();
         
-        const char* fbxPath = "../../FBXFile/tree.fbx";
+        const char* fbxPath = "../../FBXFile/montage_map.fbx";
         auto fileData = FBXReader::loadFile(fbxPath);
         ofbx::IScene* scene = ofbx::load(fileData.data(), (ofbx::usize)fileData.size(), static_cast<ofbx::u16>(ofbx::LoadFlags::NONE), nullptr, nullptr);
 
@@ -97,22 +97,19 @@ namespace Demo
                 m_sceneNodes.push_back(node);
 
                 loadedCount++;
+            }
         }
-        scene->destroy();
-
         if (loadedCount == 0)
             throw std::runtime_error("No valid meshes found in FBX");
-    }
+        scene->destroy();
 
         node3.second->setPosition(0, -10, 0);
         node3.second->setScale(100, 1, 100);
 
         item3.second->setDatablock("Marble");
         node3.second->attachObject(item3.second);
-
         Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
-
-		new MyPlayer(this);
+        new MyPlayer(this);
 
         ExecuteAction([&](IGameObject* go)
             {
@@ -122,24 +119,23 @@ namespace Demo
         Ogre::Light* light = m_manager->createLight();
         Ogre::SceneNode* lightNode = rootNode->createChildSceneNode();
         lightNode->attachObject(light);
-        lightNode->setPosition(0,150,0 );
+        lightNode->setPosition(0, 150, 0);
         light->setPowerScale(1);
         light->setType(Ogre::Light::LT_DIRECTIONAL);
         light->setDirection(Ogre::Vector3(0, -1, 0).normalisedCopy());
-
         m_manager->setAmbientLight(Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f * 60.0f,
             Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f * 60.0f,
             -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
 
-    }
+}
 
-    void ArenaShooterGameState::update(float timeSinceLast)
-    {
-        ExecuteBegin();
-        //input
-		KT::Input::Update();
+void ArenaShooterGameState::update(float timeSinceLast)
+{
+    ExecuteBegin();
+    //input
+    KT::Input::Update();
 
-        ExecuteAction([](IGameObject* go)
+    ExecuteAction([](IGameObject* go)
             {
                 go->input();
             });
@@ -190,7 +186,7 @@ namespace Demo
 
     void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
     {
-       // TutorialGameState::keyReleased(arg);
+        // TutorialGameState::keyReleased(arg);
     }
 
     Ogre::SceneManager* ArenaShooterGameState::GetSceneManager()
@@ -200,10 +196,10 @@ namespace Demo
 
     void ArenaShooterGameState::destroyScene()
     {
-          ExecuteAction([&](IGameObject* go)
-          {
-              go->Exit();
-          });
+            ExecuteAction([&](IGameObject* go)
+            {
+                go->Exit();
+            });
         TutorialGameState::destroyScene();
     }
 
