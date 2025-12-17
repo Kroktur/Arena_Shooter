@@ -63,7 +63,7 @@ namespace KT
 
 						minOverlap = overlapInfo.second;
 						if (Dir.Dot(axe) < 0)
-							smallestAxis = (axe * - 1).Normalize();
+							smallestAxis = (axe * -1).Normalize();
 						else
 						{
 							smallestAxis = axe.Normalize();
@@ -78,7 +78,7 @@ namespace KT
 			}
 		private:
 			template<typename type, template <typename>class VectorType> requires is_Vector<VectorType<type>>
-			static std::pair<type,type> GetMinAndMaxFromProjection(const std::vector<VectorType<type>>& pts, const VectorType<type>& axe)
+			static std::pair<type, type> GetMinAndMaxFromProjection(const std::vector<VectorType<type>>& pts, const VectorType<type>& axe)
 			{
 				type min = std::numeric_limits<type>::max();
 				type max = std::numeric_limits<type>::lowest();
@@ -91,15 +91,14 @@ namespace KT
 				return std::pair<type, type>(min, max);
 			}
 			template<typename type>
-			static std::pair<bool,type> OverLapResult(const std::pair<type, type>& lhs, const std::pair<type, type>& rhs)
+			static std::pair<bool, type> OverLapResult(const std::pair<type, type>& lhs, const std::pair<type, type>& rhs)
 			{
-				if (lhs.first > rhs.second || lhs.second < rhs.first)
+				if (lhs.first >= rhs.second || lhs.second <= rhs.first)
 					return std::pair<bool, type>(false, type());
-				type overlap = Math::Min(lhs.second , rhs.second) - Math::Max(lhs.first,rhs.first);
+				type overlap = Math::Min(lhs.second, rhs.second) - Math::Max(lhs.first, rhs.first);
 				return std::pair<bool, type>(true, overlap);
 			}
 		};
-
 
 	};
 

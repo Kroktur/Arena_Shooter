@@ -15,144 +15,49 @@ public:
 	void Exit() override;
 	void update(float deltaTime) override;
 	void input() override;
-//	// --- getters ---
-//	float getHealth() const;
-//	float getRunningSpeed() const;
-//	float getMana() const;
-//	float getMaxHealth() const;
-//
-//	// --- setters ---
-//	void setHealth(float health);
-//	void setRunningSpeed(float speed);
-//	void setMana(float mana);
-//
-//	// --- actions ---
-//	void takeDamage(float damage);
-//	void recoverMana(float amount);
-//	void consumeMana(float amount);
+	// --- getters ---
+	MyCamera* getCamera();
+
+
+	// --- setters ---
+	void SetCamera(MyCamera* camera);
+
+	void startDashForward();
+	void shootFireball();
+	bool isGrounded() const;
 
 	// --- movement ---
 	void moveTranslation(float deltaTime);
 	void inputPressed();
-//private:
-//	float m_health;
-//	float m_mana;
+	bool isMoving() const;
 	float m_runningSpeed;
-//	float m_shootCadence;
-//	const float m_maxHealth = 100.0f;
-//	const float m_maxMana = 100.0f;
+
+
 private:
 	bool m_ZQSD[4];
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
-};
+	Ogre::Vector3 m_velocity = Ogre::Vector3::ZERO;
+	float m_dashSpeed = 50.0f;
+	MyCamera* m_camera = nullptr;
+	Ogre::Bone* m_fireBone = nullptr;
+	/*int m_fireBoneIndex = -1;
+	Ogre::TagPoint* m_fireTagPoint = nullptr;*/
 
-class IdlePlayerState : public KT::IState<MyPlayer>
-{
-	public:
-	IdlePlayerState(MyPlayer* entity) :KT::IState<MyPlayer>(entity) {}
-	void OnEnter() override
-	{
-		// Logic to execute when entering idle state
-	}
-	void OnExit() override
-	{
-		// Logic to execute when exiting idle state
-	}
-	void ProcessInput() override
-	{
-		// Process input for idle state
-	}
-	void Update(const float& dt) override;
-
-	void Render(const float& alpha) override
-	{
-		// Render logic for idle state
-	}
-};
-
-class JumpPlayerState : public KT::IState<MyPlayer>
-{
 public:
-	JumpPlayerState(MyPlayer* entity) :KT::IState<MyPlayer>(entity) {}
-	void OnEnter() override
-	{
-		// Logic to execute when entering idle state
-	}
-	void OnExit() override
-	{
-		// Logic to execute when exiting idle state
-	}
-	void ProcessInput() override
-	{
-		// Process input for idle state
-	}
-	void Update(const float& dt) override
-	{
-		// Update logic for idle state
-	}
-	void Render(const float& alpha) override
-	{
-		// Render logic for idle state
-	}
+	// movement variables
+	float m_verticalVelocity = 0.0f;
+	float m_jumpForce = 20.0f;
+	float m_gravity = -45.0f;
+	bool  m_isGrounded = true;
+	float m_walkSpeed = 15.0f;
+	float m_runSpeed = 35.0f;
+	float m_currentSpeed = 8.0f;
+	float m_dashFriction = 80.0f;
 };
 
-
-
-inline MyPlayer::MyPlayer(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) : KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),m_stateMachine(nullptr)
+inline MyPlayer::MyPlayer(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner) :
+		KT::CompositeCRTP<MyPlayer, IGameObject, Demo::ArenaShooterGameState>(owner),
+		m_stateMachine(nullptr)
 {
 
 }
-
-class MyPlayer2 : public IGameObject, public KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>
-{
-public:
-	MyPlayer2(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, Ogre::SceneNode* node) : KT::CompositeCRTP<MyPlayer2, IGameObject, Demo::ArenaShooterGameState>(owner)
-	{
-		m_node = node;
-	}
-	void Init() override
-	{
-		
-	}
-	 void Exit() override
-	{
-		
-	}
-	void update(float deltaTime) override
-	{
-		int toto = 0;
-	}
-	void input() override
-	{
-		
-	}
-	//	// --- getters ---
-	//	float getHealth() const;
-	//	float getRunningSpeed() const;
-	//	float getMana() const;
-	//	float getMaxHealth() const;
-	//
-	//	// --- setters ---
-	//	void setHealth(float health);a
-	//	void setRunningSpeed(float speed);
-	//	void setMana(float mana);
-	//
-	//	// --- actions ---
-	//	void takeDamage(float damage);
-	//	void recoverMana(float amount);
-	//	void consumeMana(float amount);
-
-		// --- movement ---
-	void moveTranslation(float deltaTime) const;
-	void inputPressed();
-	//private:
-	//	float m_health;
-	//	float m_mana;
-	float m_runningSpeed;
-	//	float m_shootCadence;
-	//	const float m_maxHealth = 100.0f;
-	//	const float m_maxMana = 100.0f;
-private:
-	bool m_ZQSD[4];
-	Ogre::SceneNode* m_node;
-};

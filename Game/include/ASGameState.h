@@ -16,11 +16,15 @@ struct SolverResult;
 
 namespace Demo
 {
-
-
 	class ArenaShooterGameState : public TutorialGameState , public KT::ExcludeRootCRTP<ArenaShooterGameState,IGameObject,ArenaShooterGameState>
 	{
 		MyCamera* m_camera;
+		Ogre::Item* m_pTtem;
+
+
+	private:
+		Ogre::SceneNode* mSceneNode;
+		Ogre::SceneNode* m_playerNode;
 		Ogre::SceneManager* m_manager;
 		std::vector<std::function<void()>> instantiate;
 		void ExecuteBegin();
@@ -42,7 +46,7 @@ namespace Demo
 		void destroyScene() override;
 		void deinitialize() override;
 		void ToDoAtBegin(std::function<void()> fn);
-	
+		void mouseMoved(const SDL_Event& evt);
 	};
 }
 #endif

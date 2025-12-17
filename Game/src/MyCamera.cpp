@@ -2,6 +2,7 @@
 
 #include "Core/Input.h"
 #include "Math/MyMath.h"
+#include "Math/Vector3.h"
 constexpr float MIN_PITCH = -1.55f;
 constexpr float MAX_PITCH = 1.55f;
 
@@ -11,21 +12,23 @@ MyCamera::MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode) :
         m_speedModifier(false),
         m_cameraYaw(0),
         m_cameraPitch(0),
-        m_cameraBaseSpeed(10),
+		m_sensitivity(0.002f),
+        m_cameraBaseSpeed(50),
         m_cameraSpeedBoost(5),
 		m_graphicsSystem(graphicsSystem)
 {
     // memset is the same as : std::fill(std::begin(m_ZSQD), std::end(m_ZSQD), false);
 	memset(m_ZQSD, 0, sizeof(m_ZQSD));               // 0: Z, 1: S, 2: Q, 3: D
 	memset(m_directionalCross, 0, sizeof(m_directionalCross)); // 0: Left, 1: Right, 2: Up, 3: Down
+	//Camera setup
+	// back of player view
     m_camera = m_graphicsSystem->getCamera();
-    m_camera->setPosition(0, 30, 90);
-    m_camera->pitch(-Ogre::Degree(90));
-    m_camera->setNearClipDistance(1.0f);
-    m_camera->setFarClipDistance(100000.0f);
-    m_camera->lookAt(0, 30, 0);
- //   cameraNode->setPosition(0, 100, 0);
-
+    m_camera->setPosition(0, 10, 0);
+	/*m_camera->pitch(-Ogre::Degree(10));*/
+    m_camera->setNearClipDistance(0.2f);
+    m_camera->setFarClipDistance(1000.0f);
+    m_camera->setFOVy(Ogre::Degree(90));
+    /*m_camera->lookAt(0, 10, 0);*/
 }
 
 Ogre::Camera* MyCamera::getCamera() const
@@ -33,56 +36,19 @@ Ogre::Camera* MyCamera::getCamera() const
     return m_camera;
 }
 
+void MyCamera::setTarget(Ogre::SceneNode* target)
+{
+    m_target = target;
+}
+
 void MyCamera::update(const float& dt)
 {
-	Ogre::Camera* camera = m_graphicsSystem->getCamera();
-    Ogre::Node* cameraNode = m_useSceneNode ? camera->getParentNode() : nullptr;
-  /*  if (m_cameraYaw != 0.0f || m_cameraPitch != 0.0f)
-    {
-	    if (m_useSceneNode)
-	    {
-            cameraNode->yaw(Ogre::Radian(m_cameraYaw), Ogre::Node::TS_WORLD);
-            cameraNode->pitch(Ogre::Radian(m_cameraPitch));
-	    }
-        else
-        {
-            camera->yaw(Ogre::Radian(m_cameraYaw));
-            camera->pitch(Ogre::Radian(m_cameraPitch));
-        }
+    if (!m_target)
+        return;
+    Ogre::Vector3 playerPos = m_target->getPosition();
+    Ogre::Vector3 offset(0, 7.5f, 0);
 
-        m_cameraYaw = 0.0f;
-        m_cameraPitch = 0.0f;
-    }*/
-
-  //  static bool init = false;
-  //  if (!init)
-  //  {
-  //      //cameraNode->pitch(Ogre::Degree(90), Ogre::Node::TS_WORLD);
-  //      camera->pitch(-Ogre::Degree(90));
-		//init = true;
-  //  }
-
-	// --- Movement ---
-    int camMovementZ = m_directionalCross[2] - m_directionalCross[0];
-    int camMovementX = m_directionalCross[3] - m_directionalCross[1];
-    int slideUpDown  = m_directionalCross[0] - m_directionalCross[1];
-
-    if (camMovementX || slideUpDown || camMovementZ)
-    {
-        Ogre::Vector3 dir((float)camMovementX, (float)slideUpDown, (float)-camMovementZ);
-        dir.normalise();
-
-        float speed = m_cameraBaseSpeed;
-        if (m_speedModifier)
-            speed *= m_cameraSpeedBoost;
-
-        dir *= speed * dt;
-
-        if (m_useSceneNode)
-            cameraNode->translate(dir, Ogre::Node::TS_LOCAL);
-        else
-            camera->moveRelative(dir);
-    }
+    m_camera->setPosition(playerPos + offset);
 }
 
 bool MyCamera::keyPressed(const SDL_KeyboardEvent& arg)
@@ -139,11 +105,26 @@ void MyCamera::Input()
 
 void MyCamera::onMouseMoved(const SDL_Event& arg)
 {
-    constexpr float sensitivity = 0.15f;
+    m_cameraYaw -= arg.motion.xrel * m_sensitivity;
+    m_cameraPitch -= arg.motion.yrel * m_sensitivity;
 
-    m_cameraYaw += -arg.motion.xrel * sensitivity * 0.002f;
-    m_cameraPitch += -arg.motion.yrel * sensitivity * 0.002f;
+    m_cameraPitch = std::max(MIN_PITCH, std::min(MAX_PITCH, m_cameraPitch));
 
-    // Clamp pitch
-    m_cameraPitch = KT::Math::Clamp(m_cameraPitch, MIN_PITCH, MAX_PITCH);
+    m_camera->setOrientation(
+        Ogre::Quaternion(Ogre::Radian(m_cameraYaw), Ogre::Vector3::UNIT_Y) *
+        Ogre::Quaternion(Ogre::Radian(m_cameraPitch), Ogre::Vector3::UNIT_X)
+    );
+}
+
+Ogre::Vector3 MyCamera::getDirection() const
+{
+    Ogre::Vector3 dir = m_camera->getDirection();
+    dir.y = 0;
+    dir.normalise();
+    return dir;
+}
+
+void MyCamera::setFov(float degrees) const
+{
+    m_camera->setFOVy(Ogre::Degree(degrees));
 }

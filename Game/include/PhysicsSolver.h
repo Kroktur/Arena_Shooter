@@ -143,6 +143,8 @@ private:
 	        finalResult.mvt = finalResult.normal * finalResult.depth;
 			finalResult.isColliding = true;
 			return finalResult;
+
+
 	    }
 
     static KT::SolverResult<float,3,KT::Vector3> SolveComplex(const KT::OBB3DF& lhs, const KT::OBB3DF& rhs)
