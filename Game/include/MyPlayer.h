@@ -37,7 +37,7 @@ private:
 	bool m_ZQSD[4];
 	std::unique_ptr<KT::StateMachine<MyPlayer>> m_stateMachine;
 	Ogre::Vector3 m_velocity = Ogre::Vector3::ZERO;
-	float m_dashSpeed = 50.0f;
+	float m_dashSpeed = 1000;
 	MyCamera* m_camera = nullptr;
 	Ogre::Bone* m_fireBone = nullptr;
 	/*int m_fireBoneIndex = -1;
@@ -46,11 +46,11 @@ private:
 public:
 	// movement variables
 	float m_verticalVelocity = 0.0f;
-	float m_jumpForce = 20.0f;
+	float m_jumpForce = 50;
 	float m_gravity = -45.0f;
 	bool  m_isGrounded = true;
-	float m_walkSpeed = 15.0f;
-	float m_runSpeed = 35.0f;
+	float m_walkSpeed = 100;
+	float m_runSpeed = 150;
 	float m_currentSpeed = 8.0f;
 	float m_dashFriction = 80.0f;
 };

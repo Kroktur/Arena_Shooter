@@ -25,6 +25,7 @@
 #include "GameCollision.h"
 #include "fbxLoader.h"
 #include "MapObject.h"
+#include "Wall.h"
 
 namespace Demo
 {
@@ -46,6 +47,24 @@ namespace Demo
 
     void ArenaShooterGameState::createScene01()
     {
+        auto instantiateWall = [&](float offset, float halfSize)
+        {
+                float realOffset = offset + halfSize;
+                float realSize = realOffset * 2;
+				// Left
+                new Wall(this, KT::Vector3F{ -realOffset,0,0 }, KT::Vector3F{ halfSize,realSize,realSize });
+                // Right
+                new Wall(this, KT::Vector3F{ realOffset,0,0 }, KT::Vector3F{ halfSize,realSize,realSize });
+                // Up
+                new Wall(this, KT::Vector3F{ 0,realOffset,0 }, KT::Vector3F{ realSize,halfSize,realSize });
+                // Down
+                new Wall(this, KT::Vector3F{ 0,-realOffset,0 }, KT::Vector3F{ realSize,halfSize,realSize });
+                // Front
+                new Wall(this, KT::Vector3F{ 0,0,realOffset }, KT::Vector3F{ realSize,realSize,halfSize });
+                // Back
+                new Wall(this, KT::Vector3F{ 0,0,-realOffset }, KT::Vector3F{ realSize,realSize,halfSize });
+        };
+
 
         m_dispatcher.Add<MyPlayer, Fox, Collision::Resolve,false>();
         m_dispatcher.Add < Fox, MyPlayer, Collision::Resolve,false > ();
@@ -56,6 +75,7 @@ namespace Demo
         m_dispatcher.Add<MapTile, Fox, Collision::Resolve, false>();
         m_dispatcher.Add < Fox, MapTile, Collision::Resolve, false >();
     
+        m_dispatcher.Add < Wall,Wall, Collision::Resolve, false >();
 
         TutorialGameState::createScene01();
         m_manager = mGraphicsSystem->getSceneManager();
@@ -94,7 +114,9 @@ namespace Demo
 		new Fox(this);
 
         auto objs = loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
-        
+
+        instantiateWall(10000.0f, 50.0f);
+
         ExecuteAction([&](IGameObject* go)
             {
                 go->Init();

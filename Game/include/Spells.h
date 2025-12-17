@@ -12,7 +12,7 @@
 class Fireball : public IGameObject, public KT::CompositeCRTP<Fireball, IGameObject, Demo::ArenaShooterGameState>
 {
 public:
-	Fireball(IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, const Ogre::Vector3& pos, const Ogre::Vector3& dir) : KT::CompositeCRTP<Fireball, IGameObject, Demo::ArenaShooterGameState>(owner), m_direction(dir), m_pos(pos), m_speed(200.0f)
+	Fireball(KT::IComposite<IGameObject, Demo::ArenaShooterGameState>* owner, const Ogre::Vector3& pos, const Ogre::Vector3& dir) : KT::CompositeCRTP<Fireball, IGameObject, Demo::ArenaShooterGameState>(owner), m_direction(dir), m_pos(pos), m_speed(200.0f)
 	{
 	}
     ~Fireball() override = default;

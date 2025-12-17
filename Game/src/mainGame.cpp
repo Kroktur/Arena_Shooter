@@ -22,7 +22,6 @@ INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
-	return Demo::MainEntryPoints::mainAppSingleThreaded(DEMO_MAIN_ENTRY_PARAMS);
 
     try
     {
@@ -45,7 +44,7 @@ INT WINAPI WinMainApp(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine
 
 namespace Demo
 {
-    class EmptyProjectGraphicsSystem final : public GraphicsSystem
+    class EmptyProjectGraphicsSystem final : public GraphicsSystem 
     {
         Ogre::CompositorWorkspace* setupCompositor() override
         {

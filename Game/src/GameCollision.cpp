@@ -42,3 +42,8 @@ void Collision::Resolve(Fox& fox, MapTile& map, solver solver)
 	Ogre::SceneNode* playerNode = Mesh->GetNode();
 	playerNode->translate(-solver.mvt.x,- solver.mvt.y, -solver.mvt.z);
 }
+
+void Collision::Resolve(Wall& wall, Wall& wall2, solver solver)
+{
+	return;
+}
