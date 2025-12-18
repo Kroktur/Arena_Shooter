@@ -37,7 +37,7 @@ void MyPlayer::Init()
 	auto item = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "HandPlane.mesh"); }, manager, "HandPlane.mesh");
 	auto mnode = NodePull::Type::PullValidObject(NodePull::create, manager);
 	mnode.second->setPosition(0, 0,0);
-	//mnode.second->setPosition(548, 0, -2486);
+	mnode.second->setPosition(548, 0, -2486);
 
 	mnode.second->setScale(1, 1, 1);
 	mnode.second->yaw(Ogre::Degree(180));
@@ -132,13 +132,6 @@ void MyPlayer::update(float deltaTime)
 
 void MyPlayer::input()
 {
-
-
-	if (KT::Input::isPressed<KT::KEY>(KT::KEY::P))
-	{
-		GetComponent<LivingComponent<IGameObject>>()->EnableDeath();
-	}
-
 	//NE PAS TOUCHER
 	m_stateMachine->ProcessInput();
 	// FIN NE PAS TOUCHER
