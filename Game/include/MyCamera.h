@@ -1,0 +1,53 @@
+#pragma once
+
+#include <OgreCamera.h>
+#include <OgreVector3.h>
+#include <SDL_events.h>
+
+#include "GraphicsSystem.h"
+
+class MyCamera
+{
+public:
+	explicit MyCamera(Demo::GraphicsSystem* graphicsSystem, bool useSceneNode = false);
+	~MyCamera() = default;
+
+	void update(const float& dt);
+
+	// --- getters ---
+	Ogre::Camera* getCamera() const;
+	Ogre::Vector3 getDirection() const;
+
+	// --- setters ---
+	void setTarget(Ogre::SceneNode* target);
+	void setFov(float degrees) const;
+
+	// --- input ---
+	void onMouseMoved(const SDL_Event& arg);
+	bool keyPressed(const SDL_KeyboardEvent& arg);
+	bool keyReleased(const SDL_KeyboardEvent& arg);
+	void Input();
+private:
+	Ogre::Camera* m_camera;
+	Ogre::SceneNode* m_camNode;
+
+	// --- spring system ---
+	Ogre::Vector3 m_targetPosition;
+	Ogre::Vector3 m_velocity; // speed memory (for the overshoot)
+
+	// FPS camera control
+	float m_cameraYaw;
+	float m_cameraPitch;
+	float m_sensitivity;
+
+	// --- booleans ---
+	bool m_ZQSD[4];
+	bool m_directionalCross[4];
+
+	Demo::GraphicsSystem* m_graphicsSystem;
+	Ogre::SceneNode* m_target = nullptr;
+
+public:
+	float m_cameraBaseSpeed;
+	float m_cameraSpeedBoost;
+};

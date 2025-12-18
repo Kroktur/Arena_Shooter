@@ -1,0 +1,247 @@
+
+#include "ASGameState.h"
+
+#include <OgreCamera.h>
+#include <OgreHlmsPbs.h>
+#include <OgreSceneManager.h>
+
+#include "Fox.h"
+#include "GraphicsSystem.h"
+#include "OgreItem.h"
+#include "MyCamera.h"
+#include "MyPlayer.h"
+#include "NodePull.h"
+#include "Core/Input.h"
+#include "OgreTextureGpuManager.h"
+#include "OgreTextureFilters.h"
+
+#include "OgreHlmsManager.h"
+#include "OgreHlmsPbs.h"
+
+#include "OgreHlmsPbsDatablock.h"
+#include "OgreHlmsSamplerblock.h"
+#include "PhysicsSolver.h"
+#include "Tools/Chrono.h"
+#include "GameCollision.h"
+#include "fbxLoader.h"
+#include "MapObject.h"
+#include "Wall.h"
+
+namespace Demo
+{
+    ArenaShooterGameState::ArenaShooterGameState(const Ogre::String& helpDescription)
+        :TutorialGameState(helpDescription)
+    {
+    }
+
+    ArenaShooterGameState::~ArenaShooterGameState()
+    {
+        /*  ExecuteAction([&](IGameObject* go)
+              {
+                  go->Exit();
+              });*/
+    }
+
+    void ArenaShooterGameState::createScene01()
+    {
+        auto instantiateWall = [&](float offset, float halfSize)
+        {
+                float realOffset = offset + halfSize;
+                float realSize = realOffset * 2;
+				// Left
+                new Wall(this, KT::Vector3F{ -realOffset,0,0 }, KT::Vector3F{ halfSize,realSize,realSize });
+                // Right
+                new Wall(this, KT::Vector3F{ realOffset,0,0 }, KT::Vector3F{ halfSize,realSize,realSize });
+                // Up
+                new Wall(this, KT::Vector3F{ 0,realOffset,0 }, KT::Vector3F{ realSize,halfSize,realSize });
+                // Down
+                new Wall(this, KT::Vector3F{ 0,-realOffset,0 }, KT::Vector3F{ realSize,halfSize,realSize });
+                // Front
+                new Wall(this, KT::Vector3F{ 0,0,realOffset }, KT::Vector3F{ realSize,realSize,halfSize });
+                // Back
+                new Wall(this, KT::Vector3F{ 0,0,-realOffset }, KT::Vector3F{ realSize,realSize,halfSize });
+        };
+
+
+        m_dispatcher.Add<MyPlayer, Fox, Collision::Resolve,false>();
+        m_dispatcher.Add < Fox, MyPlayer, Collision::Resolve,false > ();
+
+        m_dispatcher.Add<MyPlayer, MapTile, Collision::Resolve, false>();
+        m_dispatcher.Add < MapTile, MyPlayer, Collision::Resolve, false >();
+
+        m_dispatcher.Add<MapTile, Fox, Collision::Resolve, false>();
+        m_dispatcher.Add < Fox, MapTile, Collision::Resolve, false >();
+    
+        m_dispatcher.Add < Wall,Wall, Collision::Resolve, false >();
+
+        m_dispatcher.Add <Fireball, Wall, Collision::Resolve, true >();
+        m_dispatcher.Add <Fireball, Fox, Collision::Resolve, true >();
+        m_dispatcher.Add <Fireball, MapTile, Collision::Resolve, true >();
+        TutorialGameState::createScene01();
+        m_manager = mGraphicsSystem->getSceneManager();
+
+        m_camera = new MyCamera(mGraphicsSystem, false);
+
+        // INIT ALL PULL 
+        m_manager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 5, 500);
+
+        auto item3 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "CubeFromMedia_d.mesh"); }, m_manager, "CubeFromMedia_d.mesh");
+        //auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
+        //auto item1 = ItemPull::Type::PullValidObjectWithCondition(ItemPull::create, [](Ogre::Item* node) {return ItemPull::ConditionStr(node, "Plane.005.mesh"); }, m_manager, "Plane.005.mesh");
+
+        auto node3 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+        auto node1 = NodePull::Type::PullValidObject(NodePull::create, m_manager);
+
+        node3.second->setPosition(0, -10, 0);
+        node3.second->setScale(100, 1, 100);
+        item3.second->setDatablock("Marble");
+		node3.second->attachObject(item3.second);
+        //node1.second->setPosition(0, 0, 0);
+        node1.second->setScale(1, 1, 1);
+		//node1.second->attachObject(item1.second);//node1.second->setPosition(0, 0, 0);
+        node1.second->setScale(1, 1, 1);
+        //node1.second->attachObject(item1.second);
+
+        Ogre::SceneNode* rootNode = m_manager->getRootSceneNode();
+
+        MyPlayer* player = new MyPlayer(this);
+        player->SetCamera(m_camera);
+		new Fox(this);
+
+        auto objs = loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "IleFinale.fbx");
+
+        instantiateWall(10000.0f, 50.0f);
+
+        ExecuteAction([&](IGameObject* go)
+            {
+                go->Init();
+            });
+
+        auto mesh = player->GetComponent<MeshComponent<IGameObject>>();
+        auto playerNode = mesh->GetNode();
+        m_camera->setTarget(playerNode);
+
+        for (auto& obj : objs)
+        {
+            auto map =new MapTile(this, obj.node, obj.item);
+        	map->Init();
+        	auto collide = map->GetComponent<CollisionComponent<IGameObject>>();
+        	OgreSolver::ADDStatic(map, collide->GetGlobalObbs());
+        }
+        Ogre::Light* sun = m_manager->createLight();
+        Ogre::SceneNode* sunNode = rootNode->createChildSceneNode();
+        sunNode->attachObject(sun);
+        sun->setPowerScale(1.0f);
+        sun->setType(Ogre::Light::LT_DIRECTIONAL);
+        sun->setDirection(Ogre::Vector3(-0.3f, -1.0f, -0.2f).normalisedCopy());
+
+        m_manager->setAmbientLight(
+            Ogre::ColourValue(0.1f, 0.1f, 0.1f),
+            Ogre::ColourValue(0.02f, 0.02f, 0.02f),
+            -sun->getDirection());
+    }
+
+    void ArenaShooterGameState::update(float timeSinceLast)
+    {
+        ExecuteBegin();
+        //input
+
+		KT::Input::Update();
+        std::vector<IComponent*> toDelet;
+        //logic here
+        ExecuteAction([&](IComponent* component)
+            {
+                auto go = component->AsBase();
+                if (!go)
+                    return;
+                if (!go->HasComponent<LivingComponent<IGameObject>>())
+                    return;
+                auto life = go->GetComponent<LivingComponent<IGameObject>>();
+                if (!life->IsLiving())
+                    toDelet.push_back(component);
+            });
+        for (int i = (static_cast<int>(toDelet.size()) - 1); i >= 0; --i)
+        {
+            toDelet[i]->AsBase()->Exit();
+            delete toDelet[i];
+        }
+        toDelet.clear();
+
+        KT::Input::Update();
+
+        ExecuteAction([](IGameObject* go)
+            {
+                go->input();
+            });
+
+        //update
+        if (m_camera)
+            m_camera->update(timeSinceLast);
+        OgreSolver::Clear();
+
+        ExecuteAction([&](IComponent<IGameObject, ArenaShooterGameState>* component)
+            {
+				auto go = component->AsBase();
+                go->update(timeSinceLast);
+				if (go->HasComponent<CollisionComponent<IGameObject>>())
+				{
+                    auto collide = go->GetComponent<CollisionComponent<IGameObject>>();
+                    if (collide->GetLayer() != "Map")
+                        OgreSolver::ADD(component, collide->GetGlobalObbs());
+				}
+            });
+
+      auto result =  OgreSolver::Compute();
+      for (auto& toTest : result)
+		  m_dispatcher(*toTest.lhsObject->AsBase(), *toTest.rhsObject->AsBase(), toTest.result);
+
+        if (mDisplayHelpMode != 0)
+        {
+            // Show FPS
+            Ogre::String finalText;
+            generateDebugText(timeSinceLast, finalText);
+        }
+    }
+
+    void ArenaShooterGameState::keyReleased(const SDL_KeyboardEvent& arg)
+    {
+        // TutorialGameState::keyReleased(arg);
+    }
+
+    Ogre::SceneManager* ArenaShooterGameState::GetSceneManager()
+    {
+        return m_manager;
+    }
+
+    void ArenaShooterGameState::destroyScene()
+    {
+        ExecuteAction([&](IGameObject* go)
+            {
+                go->Exit();
+            });
+        TutorialGameState::destroyScene();
+    }
+
+    void ArenaShooterGameState::deinitialize()
+    {
+        TutorialGameState::deinitialize();
+    }
+
+    void ArenaShooterGameState::ToDoAtBegin(std::function<void()> fn)
+    {
+        instantiate.push_back(fn);
+    }
+
+    void ArenaShooterGameState::ExecuteBegin()
+    {
+        for (auto& fn : instantiate)
+            fn();
+        instantiate.clear();
+    }
+
+    void ArenaShooterGameState::mouseMoved(const SDL_Event& evt)
+    {
+        if (m_camera)
+            m_camera->onMouseMoved(evt);
+    }
+}

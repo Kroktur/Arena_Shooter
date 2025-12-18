@@ -1,0 +1,29 @@
+{
+  "blendblocks": {},
+  "pbs": {
+    "Material": {
+      "diffuse": {
+        "value": [
+          0.8001017570495605,
+          0.12733453512191772,
+          0.0014305703807622194
+        ]
+      },
+      "metalness": {
+        "value": 0.0
+      },
+      "roughness": {
+        "value": 1.0
+      },
+      "specular": {
+        "value": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "two_sided": true,
+      "workflow": "metallic"
+    }
+  }
+}
