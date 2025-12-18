@@ -108,7 +108,7 @@ namespace Demo
         player->SetCamera(m_camera);
 		new Fox(this);
 
-        auto objs = loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "IleFinale.fbx");
+        auto objs = loadMap::CreateFromFBX(m_manager, mGraphicsSystem, "montage_map.fbx");
 
         instantiateWall(10000.0f, 50.0f);
 
