@@ -128,7 +128,6 @@ void MyPlayer::update(float deltaTime)
     {
        //extractVertexPositions(item);
     }
-	std::cout << "x :" << pos.x << " z : " << pos.z << "\n";
 }
 
 void MyPlayer::input()
